@@ -19,16 +19,20 @@ def input_file(folder, *args):
     return input_file_path
 
 
-def test_demo2020(tmp_path, sut_dir):
-    input_file_path = input_file(tmp_path, 1721, 979, 366, 299, 675, 1456)
-
+def get_output(program, input_file_path):
     process = subprocess.Popen(
-        ["racket", "%s/demo2020/program.rkt" % sut_dir, input_file_path],
+        ["racket", program, input_file_path],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
 
-    output = process.communicate()[0].decode("utf-8").strip()
+    return process.communicate()[0].decode("utf-8").strip()
+
+
+def test_demo2020(tmp_path, sut_dir):
+    input_file_path = input_file(tmp_path, 1721, 979, 366, 299, 675, 1456)
+
+    output = get_output("%s/demo2020/program.rkt" % sut_dir, input_file_path)
     assert output == "514579"
 
 
@@ -47,11 +51,5 @@ def test_1(tmp_path, sut_dir):
         263,
     )
 
-    process = subprocess.Popen(
-        ["racket", "%s/1/program.rkt" % sut_dir, input_file_path],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-    )
-
-    output = process.communicate()[0].decode("utf-8").strip()
+    output = get_output("%s/1/program.rkt" % sut_dir, input_file_path)
     assert output == "7"
