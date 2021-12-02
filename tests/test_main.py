@@ -23,7 +23,6 @@ def get_output(program, input_file_path):
     process = subprocess.Popen(
         ["racket", program, input_file_path],
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
     )
 
     return process.communicate()[0].decode("utf-8").strip()
@@ -53,3 +52,17 @@ def test_1(tmp_path, sut_dir):
 
     output = get_output("%s/1/program.rkt" % sut_dir, input_file_path)
     assert output == "7"
+
+def test_2(tmp_path, sut_dir):
+    input_file_path = input_file(
+        tmp_path,
+        "forward 5",
+        "down 5",
+        "forward 8",
+        "up 3",
+        "down 8",
+        "forward 2",
+    )
+
+    output = get_output("%s/2/program.rkt" % sut_dir, input_file_path)
+    assert output == "150"
