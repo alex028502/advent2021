@@ -53,6 +53,7 @@ def test_1(tmp_path, sut_dir):
     output = get_output("%s/1/program.rkt" % sut_dir, input_file_path)
     assert output == "7"
 
+
 def test_2(tmp_path, sut_dir):
     input_file_path = input_file(
         tmp_path,
