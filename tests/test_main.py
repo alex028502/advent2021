@@ -28,14 +28,19 @@ def get_output(program, input_file_path):
     return process.communicate()[0].decode("utf-8").strip()
 
 
-def test_demo2020(tmp_path, sut_dir):
+@pytest.mark.parametrize("implementation", ["original", "recursive"])
+def test_demo2020(tmp_path, sut_dir, implementation):
     input_file_path = input_file(tmp_path, 1721, 979, 366, 299, 675, 1456)
 
-    output = get_output("%s/demo2020/program.rkt" % sut_dir, input_file_path)
+    output = get_output(
+        "%s/demo2020/%s.rkt" % (sut_dir, implementation),
+        input_file_path,
+    )
     assert output == "514579"
 
 
-def test_1(tmp_path, sut_dir):
+@pytest.mark.parametrize("implementation", ["original", "recursive"])
+def test_1(tmp_path, sut_dir, implementation):
     input_file_path = input_file(
         tmp_path,
         199,
@@ -50,7 +55,10 @@ def test_1(tmp_path, sut_dir):
         263,
     )
 
-    output = get_output("%s/1/program.rkt" % sut_dir, input_file_path)
+    output = get_output(
+        "%s/1/%s.rkt" % (sut_dir, implementation),
+        input_file_path,
+    )
     assert output == "7"
 
 

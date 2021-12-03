@@ -14,6 +14,8 @@ dependencies and stuff.
 The tests in theory should allow me to extract a function that I find myself
 using every day into a shared module, and quickly make sure I haven't broken
 anything, but I haven't done that yet.
+Actually they also allow me to try new approaches to old problems as I learn
+along the way.
 
 I tried to set up test coverage using
 [this](https://docs.racket-lang.org/cover/basics.html) but it it is designed
