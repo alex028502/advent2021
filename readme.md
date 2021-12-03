@@ -21,3 +21,5 @@ to run all the tests in one go. If I do it with mine, I can't find an easy way
 to aggregate the reports from all the tests. That's OK. There doesn't seem to
 be any danger of unused branches so far. It just would have been cool to see a
 coverage report.
+
+I am saving the data files to the repo. I don't know if I should be or not.
