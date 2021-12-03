@@ -62,7 +62,8 @@ def test_1(tmp_path, sut_dir, implementation):
     assert output == "7"
 
 
-def test_2(tmp_path, sut_dir):
+@pytest.mark.parametrize("version", ["program", "again"])
+def test_2(tmp_path, sut_dir, version):
     input_file_path = input_file(
         tmp_path,
         "forward 5",
@@ -73,7 +74,7 @@ def test_2(tmp_path, sut_dir):
         "forward 2",
     )
 
-    output = get_output("%s/2/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/2/%s.rkt" % (sut_dir, version), input_file_path)
     assert output == "150"
 
 
