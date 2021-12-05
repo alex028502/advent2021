@@ -23,5 +23,5 @@ jobs:
       run: venv/bin/pytest -vv
     - name: Format Tests
       run: venv/bin/black . --check
-    # - name: answer to day 5
-    #   run: racket 5/program.rkt 5/input.txt
+    - name: answer to day 5
+      run: racket 5/program.rkt 5/input.txt
