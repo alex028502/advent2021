@@ -61,7 +61,7 @@
 ;; ok now it should work for rooks to if I want to do that
 (define (travel-direction corner1 corner2)
   (let* ([diff (apply map - (list corner2 corner1))]
-        [side (abs (apply max diff))])
+         [side (abs (apply max diff))])
     (map (lambda (x) (/ x side)) diff)))
 
 (define (bishop-recursive direction destination path)
