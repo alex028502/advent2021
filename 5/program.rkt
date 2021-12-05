@@ -52,10 +52,32 @@
   (apply cartesian-product (map (lambda (x) (apply inclusive-range (sort x <)))
                                 (zip2 corner0 corner1))))
 
-;; crooked lines expand to zero points
+;; this could probably work for the rook moves too
+;; but would need to work a bit harder to get the side
+;; actually let's just use the max
+;; ok now it should work for rooks to if I want to do that
+(define (travel-direction corner1 corner2)
+  (let* ([diff (apply map - (list corner2 corner1))]
+        [side (abs (apply max diff))])
+    (map (lambda (x) (/ x side)) diff)))
+
+(define (bishop-recursive direction destination path)
+  (if (equal? (car path) destination)
+      path
+      (bishop-recursive direction
+            destination
+            (cons (map (lambda (x) (apply + x))
+                       (zip2 (car path) direction))
+                  path))))
+
+(define (bishop corner1 corner2)
+    (bishop-recursive (travel-direction corner1 corner2)
+                      corner2
+                      (list corner1)))
+
 (define (expand move)
   (if (not (rook? move))
-      '()
+      (apply bishop move)
       (apply rectangle move)))
 
 (define (add-to-hash hash key)
