@@ -66,28 +66,34 @@
                    (filter (lambda (x) (not (member x moves)))
                            (apply append card))))))
 
+;; if it is a winner, all we need is the score now
+;; but if is a future winner, we need the whole card still
+;; so let's just send what we have and let the next function figure out the
+;; difference
 (define (check-and-score card moves)
   (if (card-check card moves)
       (card-value card moves)
-      0))
+      card))
 
-;; this will total all the scores instead of filtering
-;; so if there are ever two winners at the same time, instead of an error
-;; we'll just get the wrong answer and have no idea why
 (define (check-all-cards cards moves)
-  (apply + (map (lambda (x) (check-and-score x moves)) cards)))
+  (map (lambda (x) (check-and-score x moves)) cards))
+
+
 
 ;; let's try passing the index instead of splitting up the list this time
 ;; I tried doing it with a past moves and a future moves argument but since
 ;; I couldn't decide which list the current move should be in
 ;; so good opportunity to try this, which is less efficient because it has to
 ;; traverse the list an extra time every time
-(define (calculate cards all-moves [cursor 1]) ;; start with 1 instead of 0!!
-  (let* ([moves (take all-moves cursor)]
-         [result (check-all-cards cards moves)])
-    (if (> result 0)
-        result
-        (calculate cards all-moves (+ 1 cursor)))))
+(define (calculate cards all-moves [cursor 1] [winners '()])
+  (if (> cursor (length all-moves))
+      (list (first winners) (last winners))
+      (let* ([moves (take all-moves cursor)]
+             [result (check-all-cards cards moves)])
+        (calculate (filter (lambda (x) (not (number? x))) result)
+                   all-moves
+                   (+ 1 cursor)
+                   (append winners (filter number? result))))))
 
 (let ([input (read-data-file file-name array-size)])
   (display (calculate (cdr input) (car input))))
