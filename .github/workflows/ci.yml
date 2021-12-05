@@ -21,5 +21,7 @@ jobs:
       run: python -m venv venv && venv/bin/pip install -r requirements.txt
     - name: Tests
       run: venv/bin/pytest -vv
+    - name: Format Tests
+      run: venv/bin/black . --check
     # - name: answer to day 5
     #   run: racket 5/program.rkt 5/input.txt
