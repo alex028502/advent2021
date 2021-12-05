@@ -32,9 +32,9 @@ def raw_input_file(folder, input_text):
     return input_file_path
 
 
-def get_output(program, input_file_path):
+def get_output(program, *args):
     process = subprocess.Popen(
-        ["racket", program, input_file_path],
+        ["racket", program] + list(args),
         stdout=subprocess.PIPE,
     )
 
@@ -52,8 +52,16 @@ def test_demo2020(tmp_path, sut_dir, implementation):
     assert output == "514579"
 
 
-@pytest.mark.parametrize("implementation", ["original", "recursive"])
-def test_1(tmp_path, sut_dir, implementation):
+day_1_cases = [
+    ["original", [], "e7"],
+    ["recursive", ["1"], "7"],
+    ["recursive", ["3"], "5"],  # part ii
+]
+
+
+@pytest.mark.parametrize("case", day_1_cases)
+def test_1(tmp_path, sut_dir, case):
+    implementation, args, answer = case
     input_file_path = input_file(
         tmp_path,
         199,
@@ -70,9 +78,9 @@ def test_1(tmp_path, sut_dir, implementation):
 
     output = get_output(
         "%s/1/%s.rkt" % (sut_dir, implementation),
-        input_file_path,
+        *(args + [input_file_path]),
     )
-    assert output == "7"
+    assert output == answer
 
 
 @pytest.mark.parametrize("version", ["program", "again"])
