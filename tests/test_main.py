@@ -53,7 +53,7 @@ def test_demo2020(tmp_path, sut_dir, implementation):
 
 
 day_1_cases = [
-    ["original", [], "e7"],
+    ["original", [], "7"],
     ["recursive", ["1"], "7"],
     ["recursive", ["3"], "5"],  # part ii
 ]
