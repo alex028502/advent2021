@@ -5,8 +5,27 @@
 ;; this program can take like five minutes on the real data set on my little
 ;; computer, but can be run on github actions to speed it up
 
+
+;; messing around with "threading" here
+;; except instead of a macro, just using a function that takes lambdas as
+;; arguments, but then made a function to make the lambdas a little shorter
+;; but that doesn't matter because it still doesn't fit on one line
+;; so could have just left it as lambda
+(define-syntax-rule (fn (x) y)
+  (lambda (x) y))
+
+(define (/> . args)
+  (let ([value (car args)]
+        [functions (cdr args)])
+    (if (= 0 (length functions))
+        value
+        (apply /> (cons ((car functions) value) (cdr functions))))))
+
 (define (parse-move str)
-  (map parse-vector (map string-trim (arrow-split str))))
+  (/> str
+      arrow-split
+      (fn (x) (map string-trim x))
+      (fn (x) (map parse-vector x))))
 
 (define (parse-vector str)
   (map string->number (comma-split str)))
@@ -18,7 +37,7 @@
   (string-split str "->"))
 
 (define (read-data-file path)
-  (map parse-move (file->lines path)))
+  (/> path file->lines (fn (x) (map parse-move x))))
 
 ;; I don't understand how this works. I understood for a second while
 ;; I was making it or copying it or whatever
@@ -69,11 +88,17 @@
                     (add-to-hash result (car input)))))
 
 (define (count-repeats input)
-  (length (filter (lambda (x) (> (cdr x) 1))
-                  (hash->list (find-repeats input)))))
+  (/> input
+      find-repeats
+      hash->list
+      (fn (y) (filter (fn (x) (> (cdr x) 1)) y))
+      length))
 
 (define (evaluate-file path)
-  (count-repeats (apply append (map expand (read-data-file path)))))
+  (/> path read-data-file
+      (fn (x) (map expand x))
+      (fn (x) (apply append x))
+      count-repeats))
 
-(display (evaluate-file (vector-ref (current-command-line-arguments) 0)))
+(/> (vector-ref (current-command-line-arguments) 0) evaluate-file display)
 (display "\n")
