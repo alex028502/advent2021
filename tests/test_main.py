@@ -170,7 +170,7 @@ def test_4_flipped(data_dir, sut_dir, tmp_path):
     input_file_path = raw_input_file(tmp_path, adjusted_content)
 
     output = get_output("%s/4/program.rkt" % sut_dir, input_file_path)
-    assert output == "4512"
+    assert output == "(4512 1924)"
 
 
 def parse_matrix(matrix_string):
