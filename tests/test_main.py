@@ -128,7 +128,7 @@ def test_3(tmp_path, sut_dir):
     )
 
     output = get_output("%s/3/program.rkt" % sut_dir, input_file_path)
-    assert output == "198"
+    assert output == "198\n230"  # part i and part ii
 
 
 def test_4(data_dir, sut_dir):

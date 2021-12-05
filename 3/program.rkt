@@ -44,6 +44,10 @@
 ;; > (vote '(0 0 1 1 1 0 0))
 ;; #f
 ;; haven't thought too hard about a tie
+;; actually in part ii they do mention a tie
+;; more important now - but luckily I have the right answer
+;; > (vote '(0 0 1 1))
+;; #t
 ;; gamma will have the opposite answer of epsilon
 ;; since I am going to get one by inverting the other
 (define (vote votes)
@@ -71,5 +75,39 @@
 
 (display (* (get-gamma input)
             (invert (get-gamma input))))
+
+(display "\n")
+
+(define numbers (map (lambda (x) (string->number x 2)) input))
+
+;; pos means 1 for the most significant
+;; > (get-digit 1 5 16)
+;; 1
+;; > (get-digit 1 5 15)
+;; 0
+(define (get-digit pos len number)
+  (bitwise-and 1 (arithmetic-shift number (- pos len))))
+
+;; if I have these two mixed up, it shouldn't affect the result!
+(define (co2-check a b)
+  (xor a b))
+
+;; these methods don't make much sense except that they compare two bools
+;; and give the opposite result from each other
+(define (o2-check a b)
+  (not (co2-check a b)))
+
+(define (calculate options len op [pos 1])
+  (if (= 1 (length options))
+      (first options)
+      (let ([bit (vote (map (lambda (x) (get-digit pos len x)) options))])
+        (calculate (filter (lambda (x) (op (= 1 (get-digit pos len x)) bit))
+                           options)
+                   len
+                   op
+                   (+ 1 pos)))))
+
+(display (* (calculate numbers number-of-digits co2-check)
+               (calculate numbers number-of-digits o2-check)))
 
 (display "\n")
