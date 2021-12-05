@@ -43,6 +43,9 @@
 (define (zip2 a b)
   (apply map list (list a b)))
 
+;; it turns out there is a function in the docs that does the same thing as this
+;; one and has the same name, but I can't figure out how to import it
+;; even with require racket/list
 (define (inclusive-range a b)
   (range a (+ 1 b)))
 
