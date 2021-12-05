@@ -16,6 +16,8 @@
 ;; formula is deterministic, I think that you could do anything, even make each
 ;; point its own list, and see what could get the answer in a reasonable amount
 ;; of time
+;; update - I just uniquely sorted them because I misunderstood the question
+;; so maybe it'll be quicker
 
 (define (parse-move str)
   (map parse-vector (map string-trim (arrow-split str))))
@@ -56,18 +58,20 @@
       '()
       (apply rectangle move)))
 
-(define (find-repeats input [result '()])
+(define (add-to-hash hash key)
+  (if (hash-has-key? hash key)
+      (hash-update hash key add1)
+      (hash-set hash key 1)))
+
+(define (find-repeats input [result (make-immutable-hash '())])
   (if (= 0 (length input))
       result
       (find-repeats (cdr input)
-                    (if (member (car input) (cdr input))
-                        (append (list (car input)) result)
-                        result))))
+                    (add-to-hash result (car input)))))
 
-;; I could have just added the repeats to a set in the first place
-;; instead of adding them to a list and then converting it to a set
 (define (count-repeats input)
-  (set-count (list->set (find-repeats input))))
+  (length (filter (lambda (x) (> (cdr x) 1))
+                  (hash->list (find-repeats input)))))
 
 (define (evaluate-file path)
   (count-repeats (apply append (map expand (read-data-file path)))))
