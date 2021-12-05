@@ -34,10 +34,6 @@
 (define (read-data-file path)
   (map parse-move (file->lines path)))
 
-(define (rook? move)
-  (or (apply = (map first move))
-      (apply = (map last move))))
-
 ;; I don't understand how this works. I understood for a second while
 ;; I was making it or copying it or whatever
 (define (zip2 a b)
@@ -49,39 +45,31 @@
 (define (inclusive-range a b)
   (range a (+ 1 b)))
 
-;; just create a rectangle function to get all the points and then only use it
-;; when we know all the points will appear in a single row or column
-(define (rectangle corner0 corner1)
-  (apply cartesian-product (map (lambda (x) (apply inclusive-range (sort x <)))
-                                (zip2 corner0 corner1))))
-
-;; this could probably work for the rook moves too
-;; but would need to work a bit harder to get the side
-;; actually let's just use the max
-;; ok now it should work for rooks to if I want to do that
 (define (travel-direction corner1 corner2)
   (let* ([diff (apply map - (list corner2 corner1))]
-         [side (abs (apply max diff))])
+         [side (apply max (map abs diff))])
     (map (lambda (x) (/ x side)) diff)))
 
-(define (bishop-recursive direction destination path)
+;; this used to be the bishop function but while writing it it became clear
+;; that it good do the rook stuff too
+;; the rook function was really cool and took advantage of cartesian products
+;; and might have been a little quicker, but this is simpler
+(define (queen-recursive direction destination path)
   (if (equal? (car path) destination)
       path
-      (bishop-recursive direction
+      (queen-recursive direction
             destination
             (cons (map (lambda (x) (apply + x))
                        (zip2 (car path) direction))
                   path))))
 
-(define (bishop corner1 corner2)
-    (bishop-recursive (travel-direction corner1 corner2)
+(define (queen corner1 corner2)
+    (queen-recursive (travel-direction corner1 corner2)
                       corner2
                       (list corner1)))
 
 (define (expand move)
-  (if (not (rook? move))
-      (apply bishop move)
-      (apply rectangle move)))
+  (apply queen move))
 
 (define (add-to-hash hash key)
   (if (hash-has-key? hash key)
