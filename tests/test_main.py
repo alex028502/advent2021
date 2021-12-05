@@ -179,3 +179,10 @@ def trim_matrix_str(matrix_string):
             new_line = new_line.replace("  ", " ")
         new_lines.append(new_line.strip())
     return "\n".join(new_lines)
+
+
+def test_5(data_dir, sut_dir):
+    input_file_path = "%s/5.txt" % data_dir
+
+    output = get_output("%s/5/program.rkt" % sut_dir, input_file_path)
+    assert output == "5"
