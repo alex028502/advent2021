@@ -83,8 +83,19 @@ def test_1(tmp_path, sut_dir, case):
     assert output == answer
 
 
-@pytest.mark.parametrize("version", ["program", "again"])
-def test_2(tmp_path, sut_dir, version):
+# I redid the program and then I after reading the manual again, I wrote a new
+# program - I could have modified an old program if I had done it recursively
+# but in part-i the order didn't matter and now it does
+day_2_cases = [
+    ["program", "150"],
+    ["again", "150"],
+    ["part-ii", "900"],
+]
+
+
+@pytest.mark.parametrize("case", day_2_cases)
+def test_2(tmp_path, sut_dir, case):
+    version, answer = case
     input_file_path = input_file(
         tmp_path,
         "forward 5",
@@ -96,7 +107,7 @@ def test_2(tmp_path, sut_dir, version):
     )
 
     output = get_output("%s/2/%s.rkt" % (sut_dir, version), input_file_path)
-    assert output == "150"
+    assert output == answer
 
 
 def test_3(tmp_path, sut_dir):
