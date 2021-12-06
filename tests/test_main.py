@@ -1,6 +1,7 @@
 import subprocess
 import os
 import uuid
+import sys
 
 import pytest
 
@@ -33,8 +34,12 @@ def raw_input_file(folder, input_text):
 
 
 def get_output(program, *args):
+    return get_output_from("racket", program, *args)
+
+
+def get_output_from(*args):
     process = subprocess.Popen(
-        ["racket", program] + list(args),
+        args,
         stdout=subprocess.PIPE,
     )
 
@@ -208,10 +213,17 @@ def test_5_2(data_dir, sut_dir):
     assert output == "12"
 
 
-@pytest.mark.parametrize("case", [[18, 26], [80, 5934], [256, 26984457539]])
-def test_6(tmp_path, sut_dir, case):
-    n, answer = case
+@pytest.mark.parametrize("how", [["racket", "rkt"], [sys.executable, "py"]])
+@pytest.mark.parametrize("what", [[18, 26], [80, 5934], [256, 26984457539]])
+def test_6(tmp_path, sut_dir, how, what):
+    interpreter, ext = how
+    n, answer = what
     input_file_path = input_file(tmp_path, "3,4,3,1,2")
 
-    output = get_output("%s/6/program.rkt" % sut_dir, str(n), input_file_path)
+    output = get_output_from(
+        interpreter,
+        "%s/6/program.%s" % (sut_dir, ext),
+        str(n),
+        input_file_path,
+    )
     assert output == str(answer)
