@@ -206,3 +206,10 @@ def test_5_2(data_dir, sut_dir):
 
     output = get_output("%s/5/program.rkt" % sut_dir, input_file_path)
     assert output == "12"
+
+
+def test_6(tmp_path, sut_dir):
+    input_file_path = input_file(tmp_path, "3,4,3,1,2")
+
+    output = get_output("%s/6/program.rkt" % sut_dir, "80", input_file_path)
+    assert output == "5934"
