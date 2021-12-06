@@ -208,8 +208,10 @@ def test_5_2(data_dir, sut_dir):
     assert output == "12"
 
 
-def test_6(tmp_path, sut_dir):
+@pytest.mark.parametrize("case", [[18, 26], [80, 5934], [256, 26984457539]])
+def test_6(tmp_path, sut_dir, case):
+    n, answer = case
     input_file_path = input_file(tmp_path, "3,4,3,1,2")
 
-    output = get_output("%s/6/program.rkt" % sut_dir, "80", input_file_path)
-    assert output == "5934"
+    output = get_output("%s/6/program.rkt" % sut_dir, str(n), input_file_path)
+    assert output == str(answer)

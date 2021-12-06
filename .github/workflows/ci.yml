@@ -25,5 +25,5 @@ jobs:
       run: venv/bin/black . --check
     # - name: answer to day 5
     #   run: racket 5/program.rkt 5/input.txt
-    - name: answer to day 6 part ii
-      run: racket 6/program.rkt 256 6/input.txt
+    # - name: answer to day 6 part ii
+    #   run: racket 6/program.rkt 256 6/input.txt
