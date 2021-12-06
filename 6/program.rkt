@@ -32,9 +32,6 @@
 (define (parse-input str)
   (classify (map string->number (string-split str ","))))
 
-;; (define (read-data-file path)
-;;   (map comma-split (file->lines path)))
-
 ;; am I re-inventing fibonacci or something??
 (define (add-day-to-data ages)
   (list-add (cdr ages)
