@@ -23,7 +23,33 @@ jobs:
       run: venv/bin/pytest -vv
     - name: Format Tests
       run: venv/bin/black . --check
-    # - name: answer to day 5
-    #   run: racket 5/program.rkt 5/input.txt
-    # - name: answer to day 6 part ii
-    #   run: racket 6/program.rkt 256 6/input.txt
+    - name: practice round (day 1 from 2020)
+      run: racket demo2020/original.rkt demo2020/data.txt
+    - name: practice round (second attempt)
+      run: racket demo2020/recursive.rkt demo2020/data.txt
+    - name: day 1 part i
+      run: racket 1/original.rkt 1/data/demo.rkt
+    - name: day 1 part i (redo)
+      run: racket 1/recursive.rkt 1 1/data/demo.rkt
+    - name: day 1 part ii
+      run: racket 1/recursive.rkt 1 1/data/demo.rkt
+    - name: day 2 part i
+      run: racket 2/program.rkt 2/input.txt
+    - name: day 2 part i again
+      run: racket 2/again.rkt 2/input.txt
+    - name: day 2 part ii
+      run: racket 2/part-ii.rkt 2/input.txt
+    - name: day 3 parts i & ii
+      run: racket 3/program.rkt 3/input.txt
+    - name: day 4 parts i & ii
+      run: racket 4/program.rkt 4/data.txt
+    - name: day 6 part i racket
+      run: racket 6/program.rkt 80 6/input.txt
+    - name: day 6 part i python
+      run: venv/bin/python 6/program.py 80 6/input.txt
+    - name: day 6 part ii racket
+      run: racket 6/program.rkt 256 6/input.txt
+    - name: day 6 part ii python
+      run: venv/bin/python 6/program.py 256 6/input.txt
+    - name: day 7 part i & ii
+      run: racket 7/program.rkt 7/input.txt
