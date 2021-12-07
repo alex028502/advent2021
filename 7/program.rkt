@@ -43,6 +43,9 @@
 (define (get-size sorted-items)
   (apply max (hash-keys sorted-items)))
 
+(define (cost a b)
+  (abs (- a b)))
+
 ;; I don't know if this is better than just counting up to the size
 ;; and evaluating the get-size on every iternation to find out if we are at
 ;; the end yet
@@ -55,7 +58,7 @@
                             (- pos 1)
                             (+ total
                                (* (hash-ref sorted-items pos 0)
-                                  (abs (- pos destination))))))))
+                                  (cost pos destination)))))))
 
 ;; I hope we don't have anything higher than a trillion!
 ;; don't want to make my min compare handle the first case where there
