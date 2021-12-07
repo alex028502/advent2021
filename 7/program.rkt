@@ -43,13 +43,6 @@
 (define (get-size sorted-items)
   (apply max (hash-keys sorted-items)))
 
-;; easier to make it one cheaper each time instead of one more expensive
-;; so we don't have to remember where we started
-(define (cost-of-distance d [total 0])
-  (if (= 0 d)
-      total
-      (cost-of-distance (- d 1) (+ total d))))
-
 (define (dist a b)
   (abs (- a b)))
 
@@ -78,10 +71,12 @@
 ;; I could also just define a min function that filters out false
 ;; and use false as the initial value
 
-(define (get-price-list-up-to n [price-list '()])
-  (if (< n 0) ;; probably won't need 0 but it keeps the indices correct
+(define (get-price-list-up-to n [price-list '(0)])
+  (if (> (length price-list) n) ;; is it expensive to get the length twice?
       price-list
-      (get-price-list-up-to (- n 1) (cons (cost-of-distance n) price-list))))
+      (get-price-list-up-to n (append price-list
+                                      (list (+ (last price-list)
+                                               (length price-list)))))))
 
 ;; a little bit of copy/paste from above - should extract something maybe
 ;; we don't care what the position is (or maybe that is part ii?)
