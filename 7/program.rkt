@@ -59,7 +59,7 @@
                             (- pos 1)
                             (+ total
                                (* (hash-ref sorted-items pos 0)
-                                  (list-ref prices
+                                  (hash-ref prices
                                             (dist pos destination))))))))
 
 ;; I hope we don't have anything higher than a trillion!
@@ -78,12 +78,15 @@
                                       (list (+ (last price-list)
                                                (length price-list)))))))
 
+(define (list->hash l)
+  (make-immutable-hash (apply map cons (list (range (length l)) l))))
+
 ;; a little bit of copy/paste from above - should extract something maybe
 ;; we don't care what the position is (or maybe that is part ii?)
 (define (calculate-fuel sorted-items [idx #f] [best infinity])
   (let* ([size (get-size sorted-items)]
          [pos (if (not idx) size idx)]
-         [prices (get-price-list-up-to size)])
+         [prices (list->hash (get-price-list-up-to size))])
     (if (< pos 0) ;; inclusive remember
         best
         (calculate-fuel sorted-items
@@ -103,7 +106,8 @@
 ;;     sort-items
 ;;     get-size
 ;;     get-price-list-up-to
-;;     length
+;;     list->hash
+;;     hash-count
 ;;     display)
 
 ;; not sure if I should "thread" into the function with "side-effects" display
