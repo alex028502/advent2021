@@ -47,7 +47,7 @@
 (define (organise-hash hash)
   (map (lambda (x) (hash-ref hash x 0)) (range (+ (get-size hash) 1))))
 
-;; I hope we don't have anything higher than a trillion!
+;; I hope we don't have any final answer higher than a trillion!
 ;; don't want to make my min compare handle the first case where there
 ;; isn't a minium yet
 ;; I tried passing down a list that starts as '() and then becomes
@@ -95,19 +95,6 @@
                     frequencies))
 
 (define input-file (vector-ref (current-command-line-arguments) 0))
-
-;; OK the price list calculation item isn't the problem
-;; I don't know if it was before, but it's not now. this two 2 seconds
-;; (/> input-file
-;;     file->lines
-;;     first
-;;     parse-input
-;;     sort-items
-;;     get-size
-;;     get-price-list-up-to
-;;     list->hash
-;;     hash-count
-;;     display)
 
 ;; not sure if I should "thread" into the function with "side-effects" display
 (define (run-with message price-list-function)
