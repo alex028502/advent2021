@@ -43,16 +43,6 @@
 (define (get-size sorted-items)
   (apply max (hash-keys sorted-items)))
 
-;; I have been trying to put the functions before the functions that call them
-;; but here, when you break up a function into smaller functions and keep the
-;; same top line and implementation and add a bunch of stuff in the middle
-;; that looks cooler in source control
-
-(define (cost a b)
-  (cost-of-distance (dist a b)))
-
-;; problem might be that we might be adding up the same distance multiple times
-;; if it takes too long, then we need to generate a "price list" at the start
 ;; easier to make it one cheaper each time instead of one more expensive
 ;; so we don't have to remember where we started
 (define (cost-of-distance d [total 0])
@@ -66,16 +56,18 @@
 ;; I don't know if this is better than just counting up to the size
 ;; and evaluating the get-size on every iternation to find out if we are at
 ;; the end yet
-(define (calculate-fuel-for destination sorted-items [idx #f] [total 0])
+(define (calculate-fuel-for prices destination sorted-items [idx #f] [total 0])
   (let ([pos (if (not idx) (get-size sorted-items) idx)])
     (if (< pos 0) ;; inclusive remember
         total
-        (calculate-fuel-for destination
+        (calculate-fuel-for prices
+                            destination
                             sorted-items
                             (- pos 1)
                             (+ total
                                (* (hash-ref sorted-items pos 0)
-                                  (cost pos destination)))))))
+                                  (list-ref prices
+                                            (dist pos destination))))))))
 
 ;; I hope we don't have anything higher than a trillion!
 ;; don't want to make my min compare handle the first case where there
@@ -86,17 +78,24 @@
 ;; I could also just define a min function that filters out false
 ;; and use false as the initial value
 
+(define (get-price-list-up-to n [price-list '()])
+  (if (< n 0) ;; probably won't need 0 but it keeps the indices correct
+      price-list
+      (get-price-list-up-to (- n 1) (cons (cost-of-distance n) price-list))))
+
 ;; a little bit of copy/paste from above - should extract something maybe
 ;; we don't care what the position is (or maybe that is part ii?)
-
-
 (define (calculate-fuel sorted-items [idx #f] [best infinity])
-  (let ([pos (if (not idx) (get-size sorted-items) idx)])
+  (let* ([size (get-size sorted-items)]
+         [pos (if (not idx) size idx)]
+         [prices (get-price-list-up-to size)])
     (if (< pos 0) ;; inclusive remember
         best
         (calculate-fuel sorted-items
                         (- pos 1)
-                        (min best (calculate-fuel-for pos sorted-items))))))
+                        (min best (calculate-fuel-for prices
+                                                      pos
+                                                      sorted-items))))))
 
 (define input-file (vector-ref (current-command-line-arguments) 0))
 
