@@ -110,8 +110,10 @@
 ;;     display)
 
 ;; not sure if I should "thread" into the function with "side-effects" display
-(define (run-with price-list-function)
+(define (run-with message price-list-function)
   (begin
+    (display message)
+    (display ": ")
     (/> input-file
         file->lines
         first
@@ -122,7 +124,13 @@
         display)
     (display "\n")))
 
-(run-with get-price-list-up-to)
+;; make the linear price list one longer than I think it has to be because
+;; of off by one errors, and since the answer is not at the end, I can't use
+;; trial and error to see if I have included enough so add 2 to the range
+;; instead of 1
+(run-with "part i" (lambda (n) (range (+ n 2))))
+(run-with "part ii" get-price-list-up-to)
+
 ;; just imagining some more stuff...
 ;; 28 21 15 10 6 3 1 0 1 3 6 10 15 21 28 36 45 55 66 78 91 105 120 136 153 171
 ;; 1  2  3  0  1 0 0 1 0 0 0 0  0  0  1  0

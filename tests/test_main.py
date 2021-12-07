@@ -233,4 +233,4 @@ def test_7(tmp_path, sut_dir):
     input_file_path = input_file(tmp_path, "16,1,2,0,4,2,7,1,2,14")
 
     output = get_output("%s/7/program.rkt" % sut_dir, input_file_path)
-    assert output == "168"
+    assert output == "part i: 37\npart ii: 168"
