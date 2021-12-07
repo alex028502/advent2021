@@ -28,11 +28,11 @@ jobs:
     - name: practice round (second attempt)
       run: racket demo2020/recursive.rkt demo2020/data.txt
     - name: day 1 part i
-      run: racket 1/original.rkt 1/data/demo.rkt
+      run: racket 1/original.rkt 1/data.txt
     - name: day 1 part i (redo)
-      run: racket 1/recursive.rkt 1 1/data/demo.rkt
+      run: racket 1/recursive.rkt 1 1/data.txt
     - name: day 1 part ii
-      run: racket 1/recursive.rkt 1 1/data/demo.rkt
+      run: racket 1/recursive.rkt 1 1/data.txt
     - name: day 2 part i
       run: racket 2/program.rkt 2/input.txt
     - name: day 2 part i again
