@@ -40,27 +40,12 @@
                   (add-to-hash result (car input)))))
 
 ;; not really the size but this could have been a list
+;; actually now we are just using "size" to turn it into a list
 (define (get-size sorted-items)
   (apply max (hash-keys sorted-items)))
 
-(define (dist a b)
-  (abs (- a b)))
-
-;; I don't know if this is better than just counting up to the size
-;; and evaluating the get-size on every iternation to find out if we are at
-;; the end yet
-(define (calculate-fuel-for prices destination sorted-items [idx #f] [total 0])
-  (let ([pos (if (not idx) (get-size sorted-items) idx)])
-    (if (< pos 0) ;; inclusive remember
-        total
-        (calculate-fuel-for prices
-                            destination
-                            sorted-items
-                            (- pos 1)
-                            (+ total
-                               (* (hash-ref sorted-items pos 0)
-                                  (hash-ref prices
-                                            (dist pos destination))))))))
+(define (organise-hash hash)
+  (map (lambda (x) (hash-ref hash x 0)) (range (+ (get-size hash) 1))))
 
 ;; I hope we don't have anything higher than a trillion!
 ;; don't want to make my min compare handle the first case where there
@@ -78,22 +63,33 @@
                                       (list (+ (last price-list)
                                                (length price-list)))))))
 
-(define (list->hash l)
-  (make-immutable-hash (apply map cons (list (range (length l)) l))))
+;; just gonna visualize for a sec..
+;; '(16 1 2 0 4 2 7 1 2 14) - input
+;; '(0  1 2 3 4 5 6 7 8 9)
+;; '(0  1 3 6 10 - price list
 
-;; a little bit of copy/paste from above - should extract something maybe
-;; we don't care what the position is (or maybe that is part ii?)
-(define (calculate-fuel sorted-items [idx #f] [best infinity])
-  (let* ([size (get-size sorted-items)]
-         [pos (if (not idx) size idx)]
-         [prices (list->hash (get-price-list-up-to size))])
-    (if (< pos 0) ;; inclusive remember
-        best
-        (calculate-fuel sorted-items
-                        (- pos 1)
-                        (min best (calculate-fuel-for prices
-                                                      pos
-                                                      sorted-items))))))
+;; the first item should not repeat
+;; this is gonna be costly... to reverse the long list but we only have to
+;; do it once - so we don't mind
+(define (reflect-list l)
+  (append (reverse (cdr l)) l))
+
+;; we might be able to speed this up by doing it recursively instead of
+;; truncating the list to only cycle through the list one time, but maybe not
+(define (calculate-fuel price-list frequencies)
+  (apply + (map * frequencies (take price-list (length frequencies)))))
+
+(define (find-best-answer price-list frequencies [best-answer infinity])
+  (if (< (length price-list) (length frequencies))
+      best-answer
+      (find-best-answer (cdr price-list)
+                        frequencies
+                        (min best-answer
+                             (calculate-fuel price-list frequencies)))))
+
+(define (get-best-answer frequencies)
+  (find-best-answer (/> frequencies length get-price-list-up-to reflect-list)
+                    frequencies))
 
 (define input-file (vector-ref (current-command-line-arguments) 0))
 
@@ -111,6 +107,22 @@
 ;;     display)
 
 ;; not sure if I should "thread" into the function with "side-effects" display
-(/> input-file file->lines first parse-input sort-items calculate-fuel display)
+(/> input-file
+    file->lines
+    first
+    parse-input
+    sort-items
+    organise-hash
+    get-best-answer
+    display)
 
 (display "\n")
+
+;; just imagining some more stuff...
+;; 28 21 15 10 6 3 1 0 1 3 6 10 15 21 28 36 45 55 66 78 91 105 120 136 153 171
+;; 1  2  3  0  1 0 0 1 0 0 0 0  0  0  1  0
+;; 28 42 45 0  6 0 0 0 0 0 0 0  0  0  28
+
+;; 3 1 0 1 3 6 10 15 21 28 36 45 55 66 78 91 105 120 136 153 171
+;; 1 2 3 0 1 0 0  1  0  0  0  0  0  0  1  0
+;; 3 2 0 1 3 6 0  15 0  0  0  0  0  0  78 0
