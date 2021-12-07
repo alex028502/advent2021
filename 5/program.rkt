@@ -15,11 +15,12 @@
   (lambda (x) y))
 
 (define (/> . args)
-  (let ([value (car args)]
-        [functions (cdr args)])
-    (if (= 0 (length functions))
-        value
-        (apply /> (cons ((car functions) value) (cdr functions))))))
+;;   (let ([value (car args)]
+;;         [functions (cdr args)])
+;;     (if (= 0 (length functions))
+;;         value
+;;         (apply /> (cons ((car functions) value) (cdr functions))))))
+   ((apply compose (reverse (cdr args))) (car args)))
 
 (define (parse-move str)
   (/> str
