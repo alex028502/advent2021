@@ -43,7 +43,24 @@
 (define (get-size sorted-items)
   (apply max (hash-keys sorted-items)))
 
+;; I have been trying to put the functions before the functions that call them
+;; but here, when you break up a function into smaller functions and keep the
+;; same top line and implementation and add a bunch of stuff in the middle
+;; that looks cooler in source control
+
 (define (cost a b)
+  (cost-of-distance (dist a b)))
+
+;; problem might be that we might be adding up the same distance multiple times
+;; if it takes too long, then we need to generate a "price list" at the start
+;; easier to make it one cheaper each time instead of one more expensive
+;; so we don't have to remember where we started
+(define (cost-of-distance d [total 0])
+  (if (= 0 d)
+      total
+      (cost-of-distance (- d 1) (+ total d))))
+
+(define (dist a b)
   (abs (- a b)))
 
 ;; I don't know if this is better than just counting up to the size
