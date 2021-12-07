@@ -87,8 +87,11 @@
                         (min best-answer
                              (calculate-fuel price-list frequencies)))))
 
-(define (get-best-answer frequencies)
-  (find-best-answer (/> frequencies length get-price-list-up-to reflect-list)
+(define (get-best-answer frequencies price-list-function)
+  (find-best-answer (/> frequencies
+                        length
+                        price-list-function
+                        reflect-list)
                     frequencies))
 
 (define input-file (vector-ref (current-command-line-arguments) 0))
@@ -107,17 +110,19 @@
 ;;     display)
 
 ;; not sure if I should "thread" into the function with "side-effects" display
-(/> input-file
-    file->lines
-    first
-    parse-input
-    sort-items
-    organise-hash
-    get-best-answer
-    display)
+(define (run-with price-list-function)
+  (begin
+    (/> input-file
+        file->lines
+        first
+        parse-input
+        sort-items
+        organise-hash
+        (lambda (x) (get-best-answer x price-list-function))
+        display)
+    (display "\n")))
 
-(display "\n")
-
+(run-with get-price-list-up-to)
 ;; just imagining some more stuff...
 ;; 28 21 15 10 6 3 1 0 1 3 6 10 15 21 28 36 45 55 66 78 91 105 120 136 153 171
 ;; 1  2  3  0  1 0 0 1 0 0 0 0  0  0  1  0
