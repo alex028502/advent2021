@@ -94,6 +94,18 @@
 
 (define input-file (vector-ref (current-command-line-arguments) 0))
 
+;; OK the price list calculation item isn't the problem
+;; I don't know if it was before, but it's not now. this two 2 seconds
+;; (/> input-file
+;;     file->lines
+;;     first
+;;     parse-input
+;;     sort-items
+;;     get-size
+;;     get-price-list-up-to
+;;     length
+;;     display)
+
 ;; not sure if I should "thread" into the function with "side-effects" display
 (/> input-file file->lines first parse-input sort-items calculate-fuel display)
 
