@@ -17,6 +17,8 @@ jobs:
       run: sudo apt-get update
     - name: Install racket
       run: sudo apt-get install -y racket
+    - name: find out racket version we randomly chose
+      run: racket --version
     - name: Install testing stuff
       run: python -m venv venv && venv/bin/pip install -r requirements.txt
     - name: Tests
