@@ -170,6 +170,13 @@
 ;; we are asking the length every single time even though it is always 10
 (define (rewiring-info-lookup rewiring-info jumbled-digit)
   (- (length rewiring-info) (length (member jumbled-digit rewiring-info))))
+;; this could just give the answer for the four easy cases about
+;; I'm really not taking advantage of the lessons from part i
+;; but if I put an if in here, more chance of something working sometimes
+;; and not other times... so let's just look them all up in the rewiring-info
+;; also I don't know if removing 1 4 7 from the hash would lead to non unique
+;; keys... so they still need to be there for that I guess
+;; and I think it is only bad to look things up in long arrays.
 
 (define (interpret-info jumbled-rewiring-info jumbled-numbers)
   (let ([rewiring-info (unjumble-rewiring-info jumbled-rewiring-info)])
