@@ -39,19 +39,11 @@
 
 (display "\n")
 
-;; just start all over for part ii
-
-;; looking at the first example, I am hoping that we always have a example of
-;; 1 4 7 and 8 on each line - if not we'll get an error - which will be useful
-;; can make this more efficient in a couple ways
-;; not append, just go through one list and then the next, and then stop when
-;; we find something - but let's try the long way first
-(define (get-example n . examples)
-  (/> (apply append examples)
-      (curry filter (lambda (x) (= (string-length x) n)))
-      car
-      string->list
-      list->set))
+;; tried to see if I could put I had had learned in minikanren and prolog
+;; tutorials to use.. but either I don't have to skills, or this isn't that
+;; class of problem, but I definitely don't have the skills to tell if this
+;; is that class of problem.  While thinking about that, I realised that 7!
+;; is only like five thousand!
 
 ;; just jot something down...
 ;; 6 0
@@ -64,46 +56,142 @@
 ;; 7 8 *
 ;; 6 9
 
+;; I bet this exists!
+;; > (length (all-orders (apply set (string->list "abcdefg"))))
+;; 5040
+;; that's 7! but I can't calculate that in racket without loading another lib
+;; I don't think this meets the tail call rules but it's not that big I guess
+;; so it works
+(define (all-orders items [tail '()])
+  (if (= (set-count items) 0)
+      (list tail) ;; but this into list to cancel some other mistake
+      (apply append (set-map items (lambda (x) (all-orders (set-remove items x)
+                                                           (cons x tail)))))))
+
+;; let's take a brake to define the digits in terms of numbers LEDs
+;; and keep the letters for the incorrect ones
+;; so that we can just look them up in that list
+;; except let's put the real letters first because it's less likely to make
+;; a mistake if we can copy straight from the instructions and leave the math
+;; to the computer
+(define correct-digits (list (set #\a #\b #\c #\e #\f #\g)
+                             (set #\c #\f)
+                             (set #\a #\c #\d #\e #\g)
+                             (set #\a #\c #\d #\f #\g)
+                             (set #\b #\c #\d #\f)
+                             (set #\a #\b #\d #\f #\g)
+                             (set #\a #\b #\d #\e #\f #\g)
+                             (set #\a #\c #\f)
+                             (set #\a #\b #\c #\d #\e #\f #\g)
+                             (set #\a #\b #\c #\d #\f #\g)))
+
+(define (convert-letter-to-number x)
+  (let ([letters "abcdefg"])
+    (- (string-length letters)
+       (length (member x (string->list letters))))))
+
+;; convert the correct letters into numbers and leave letters for the wrong ones
+(define (switch-letters-to-numbers s)
+  (apply set (set-map s convert-letter-to-number)))
+
+(define renumbered-correct-digits
+  (map switch-letters-to-numbers correct-digits))
+
+;; OK so now we have to look at every possible conversion chart and figure out
+;; what the numbers are in terms of that order of letters
+;; like what will numbers 0 through 9 be if the miswiring-pattern is
+;; "deafgbc" actually maybe "cbgfaed" is the one in the example because I
+;; starts backwards - let's see...
+(define (mangle-digit miswiring-pattern numbered-led-set)
+  (apply set (set-map
+              numbered-led-set
+              (lambda (x) (list-ref miswiring-pattern x)))))
+
+;; to optimise we could just remove 8 from the array since it is always abcdefg
+(define (mangle-digits miswiring-pattern)
+  (map (curry mangle-digit miswiring-pattern)
+       renumbered-correct-digits))
+
+;; mangle-digits gets you the "rewiring table" that looks like this
+;; for now just look up the answers
+;; but I might have to hash this too - who knows
+;; (list
+;;  (set #\a #\b #\c #\d #\e)
+;;  (set #\a #\b)
+;;  (set #\a #\c #\d #\f #\g)
+;;  (set #\a #\b #\c #\d #\f)
+;;  (set #\a #\b #\e #\f)
+;;  (set #\b #\c #\d #\e #\f)
+;;  (set #\b #\c #\d #\e #\f #\g)
+;;  (set #\a #\b #\d)
+;;  (set #\a #\b #\c #\d #\e #\f #\g)
+;;  (set #\a #\b #\c #\d #\e #\f))
+
+;; part i seems to imply that we can uniquely identify a solution with 1,4,7
+;; so let's base our first hash attempt on that and see if they are all unique
+;; ok that didn't work! only 630 hashes
+;; (define (hash-rewiring-table d)
+;;   (list (list-ref d 1)
+;;         (list-ref d 4)
+;;         (list-ref d 7)))
+;; the above didn't work, but the input is only 200 lines so maybe we don't
+;; need to hash it - just find it somehow - 200 * 5040 * ... let's find out
+;; or let's just use the whole set as the hash and do what we were gonna do!!
+;; and just ignore the order because we don't know the order of what we compare
+;; it to
+(define (hash-rewiring-table rewiring-table)
+   (apply set rewiring-table))
+
+;; assume that our hash is unique so if we are wrong we'll overwrite entries
+(define all-possible-answers
+  (/> (all-orders (apply set (string->list "abcdefg")))
+      (curry map mangle-digits)
+      (curry map (lambda (x) (cons (hash-rewiring-table x) x)))
+      make-immutable-hash))
+
+;; > (hash-count all-possible-answers)
+;; 5040
+;; we are on the home stretch - whether this can finish in seconds or days is
+;; another question
+
+;; use this to find the same hash that we have in all possible answers
+(define (hash-jumbled-rewiring-info jumbled-rewiring-info)
+  (hash-rewiring-table (/> jumbled-rewiring-info
+                           (curry map string->list)
+                           (curry map (curry apply set)))))
 
 
-(define get1 (curry get-example 2))
-(define get4 (curry get-example 4))
-(define get7 (curry get-example 3))
-;; eight might not be much use
-;; (define get8 (curry get-example 7))
+;; unjumble by looking through the list of all possible solutions
+(define (unjumble-rewiring-info jumbled-rewiring-info)
+  (/> jumbled-rewiring-info
+      hash-jumbled-rewiring-info
+      (curry hash-ref all-possible-answers)))
 
-(define (get-a x7 x1)
-  (set-subtract x7 x1))
+;; we are asking the length every single time even though it is always 10
+(define (rewiring-info-lookup rewiring-info jumbled-digit)
+  (- (length rewiring-info) (length (member jumbled-digit rewiring-info))))
 
-(define (get-b) x4 x3
-  
-  
+(define (interpret-info jumbled-rewiring-info jumbled-numbers)
+  (let ([rewiring-info (unjumble-rewiring-info jumbled-rewiring-info)])
+    (/> jumbled-numbers
+        (curry map string->list)
+        (curry map (curry apply set))
+        (curry map (curry rewiring-info-lookup rewiring-info))
+        (curry map number->string) ; should just do it with numbers
+        (curry apply string-append) ; but they are already in the right order
+        string->number))) ;; for appending
 
-;; (define (anylize examples output)
-;;   (let ([e1 (get1 examples output)]
-;;         [e2 (get2 examples output)]
-;;         [e7 (get7 examples output)])
-;;     (make-immutable-hash (list (cons 
-
-(define (calculate examples output)
-  (get-example 2 examples output))
-
-;; some examples to repl manual test with
-;; be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
-;; 8394
-;; edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
-;; 9781
-(define (calculate-line line)
+(define (interpret-line line)
   (/> line
       (lambda (x) (string-split x "|"))
       (curry map string-trim)
       (curry map string-split)
-      (curry apply calculate)))
+      (curry apply interpret-info)))
 
 (display (/> (current-command-line-arguments)
              (lambda (x) (vector-ref x 0))
              file->lines
-             (curry map calculate-line)
+             (curry map interpret-line)
              (curry apply +)))
 
 (display "\n")
