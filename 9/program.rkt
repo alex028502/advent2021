@@ -99,3 +99,59 @@
              (curry apply +)))
 
 (display "\n")
+
+;; ---------------
+
+(define (solve-other-puzzle-for-file path)
+  (/> path
+      file->lines
+      (curry map string->list)
+      (curry map (curry map (curryr />
+                                    list
+                                    list->string
+                                    string->number)))
+      (lambda (points) (/> (all-coordinates points)
+                           (curry map (lambda (p)
+                                        (if (is-low-point points p) p #f)))
+                           (curry filter identity)
+                           (curry map (curry explore-basin points))
+                           (curry map length)))))
+
+(define (explore-basin points starting-point)
+  (/> starting-point
+      (curry get-higher-neighbours points)
+      (curry map (curry explore-basin points))
+      (curry apply append)
+      (curry cons starting-point)
+      list->set
+      set->list))
+
+;; we should already have looked up all the neighbours once for the first
+;; the initial point but that's OK - let's see if it bothers the computer to
+;; look twice
+;; see notes about this function in readme for this day
+(define (get-higher-neighbours points coordinates)
+  (let ([value (lookup-value points coordinates)])
+    (/> coordinates
+        all-neighbouring-coordinates
+        (curry map (lambda (p)
+                     (list p (lookup-value points p))))
+        (curry map (lambda (x)
+                     (if (and (> (last x) value)
+                              (< (last x) 9))
+                         (car x)
+                         #f)))
+        (curry filter identity))))
+
+;; ---------------
+
+(display (/> (current-command-line-arguments)
+             (lambda (x) (vector-ref x 0))
+             solve-other-puzzle-for-file
+             (curryr sort >)
+             (curryr take 3)
+             (curry apply *)))
+
+(display "\n")
+
+;; ---------------
