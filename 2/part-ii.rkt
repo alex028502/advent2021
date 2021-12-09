@@ -8,7 +8,7 @@
 
 (define (follow-instructions moves [aim 0] [depth 0] [distance 0])
   (if (= 0 (length moves))
-      (* depth distance)
+      (list aim depth distance)
       (let ([command (car (car moves))]
             [mag (string->number (last (car moves)))])
         (if (string=? "forward" command)
@@ -25,6 +25,6 @@
                                  depth
                                  distance)))))
 
-(display (follow-instructions input))
+(display (apply * (cdr (follow-instructions input))))
 
 (display "\n")
