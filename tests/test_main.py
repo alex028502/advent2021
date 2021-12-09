@@ -241,3 +241,10 @@ def test_8(data_dir, sut_dir):
 
     output = get_output("%s/8/program.rkt" % sut_dir, input_file_path)
     assert output == "26\n61229"
+
+
+def test_9(data_dir, sut_dir):
+    input_file_path = "%s/9.txt" % data_dir
+
+    output = get_output("%s/9/program.rkt" % sut_dir, input_file_path)
+    assert output == "15"
