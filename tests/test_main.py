@@ -51,7 +51,7 @@ def test_demo2020(tmp_path, sut_dir, implementation):
     input_file_path = input_file(tmp_path, 1721, 979, 366, 299, 675, 1456)
 
     output = get_output(
-        "%s/demo2020/%s.rkt" % (sut_dir, implementation),
+        "%s/00/%s.rkt" % (sut_dir, implementation),
         input_file_path,
     )
     assert output == "514579"
@@ -82,7 +82,7 @@ def test_1(tmp_path, sut_dir, case):
     )
 
     output = get_output(
-        "%s/1/%s.rkt" % (sut_dir, implementation),
+        "%s/01/%s.rkt" % (sut_dir, implementation),
         *(args + [input_file_path]),
     )
     assert output == answer
@@ -111,7 +111,7 @@ def test_2(tmp_path, sut_dir, case):
         "forward 2",
     )
 
-    output = get_output("%s/2/%s.rkt" % (sut_dir, version), input_file_path)
+    output = get_output("%s/02/%s.rkt" % (sut_dir, version), input_file_path)
     assert output == answer
 
 
@@ -132,7 +132,7 @@ def test_3(tmp_path, sut_dir):
         "01010",
     )
 
-    output = get_output("%s/3/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/03/program.rkt" % sut_dir, input_file_path)
     assert output == "198\n230"  # part i and part ii
 
 
@@ -141,9 +141,9 @@ def test_4(data_dir, sut_dir):
     # into a python list before turning back into a text file
     # easier to skip the middle man now
     # and that means we can load the test input in the repl
-    input_file_path = "%s/4.txt" % data_dir
+    input_file_path = "%s/04.txt" % data_dir
 
-    output = get_output("%s/4/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/04/program.rkt" % sut_dir, input_file_path)
     assert output == "(4512 1924)"  # part i and part ii together
 
 
@@ -151,7 +151,7 @@ def test_4_flipped(data_dir, sut_dir, tmp_path):
     # since their example only deals with rows, I need to flip the whole
     # problem in python to make sure that it'll work for matching columns
     # and to do that I have to recreate all the array loading logic here
-    original_input_file_path = "%s/4.txt" % data_dir
+    original_input_file_path = "%s/04.txt" % data_dir
     with open(original_input_file_path) as f:
         original_content = f.read()
 
@@ -174,7 +174,7 @@ def test_4_flipped(data_dir, sut_dir, tmp_path):
 
     input_file_path = raw_input_file(tmp_path, adjusted_content)
 
-    output = get_output("%s/4/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/04/program.rkt" % sut_dir, input_file_path)
     assert output == "(4512 1924)"
 
 
@@ -207,9 +207,9 @@ def trim_matrix_str(matrix_string):
 
 # we no longer support day 5 part i
 def test_5_2(data_dir, sut_dir):
-    input_file_path = "%s/5.txt" % data_dir
+    input_file_path = "%s/05.txt" % data_dir
 
-    output = get_output("%s/5/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/05/program.rkt" % sut_dir, input_file_path)
     assert output == "12"
 
 
@@ -222,7 +222,7 @@ def test_6(tmp_path, sut_dir, how, what):
 
     output = get_output_from(
         interpreter,
-        "%s/6/program.%s" % (sut_dir, ext),
+        "%s/06/program.%s" % (sut_dir, ext),
         str(n),
         input_file_path,
     )
@@ -232,21 +232,21 @@ def test_6(tmp_path, sut_dir, how, what):
 def test_7(tmp_path, sut_dir):
     input_file_path = input_file(tmp_path, "16,1,2,0,4,2,7,1,2,14")
 
-    output = get_output("%s/7/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/07/program.rkt" % sut_dir, input_file_path)
     assert output == "part i: 37\npart ii: 168"
 
 
 def test_8(data_dir, sut_dir):
-    input_file_path = "%s/8.txt" % data_dir
+    input_file_path = "%s/08.txt" % data_dir
 
-    output = get_output("%s/8/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/08/program.rkt" % sut_dir, input_file_path)
     assert output == "26\n61229"
 
 
 def test_9(data_dir, sut_dir):
-    input_file_path = "%s/9.txt" % data_dir
+    input_file_path = "%s/09.txt" % data_dir
 
-    output = get_output("%s/9/program.rkt" % sut_dir, input_file_path)
+    output = get_output("%s/09/program.rkt" % sut_dir, input_file_path)
     assert output == "15\n1134"
 
 
