@@ -19,6 +19,8 @@ jobs:
       run: sudo apt-get install -y racket
     - name: find out racket version we randomly chose
       run: racket --version
+    - name: list raco packages in case something is missing
+      run: raco pkg show --all
     - name: Install testing stuff
       run: python -m venv venv && venv/bin/pip install -r requirements.txt
     - name: Tests
