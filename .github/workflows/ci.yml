@@ -28,38 +28,38 @@ jobs:
     - name: Format Tests
       run: venv/bin/black . --check
     - name: practice round (day 1 from 2020)
-      run: racket 00/original.rkt 00/data.txt
+      run: racket demo2020/original.rkt demo2020/data.txt
     - name: practice round (second attempt)
-      run: racket 00/recursive.rkt 00/data.txt
+      run: racket demo2020/recursive.rkt demo2020/data.txt
     - name: day 1 part i
-      run: racket 01/original.rkt 01/data.txt
+      run: racket 1/original.rkt 1/data.txt
     - name: day 1 part i (redo)
-      run: racket 01/recursive.rkt 1 01/data.txt
+      run: racket 1/recursive.rkt 1 1/data.txt
     - name: day 1 part ii
-      run: racket 01/recursive.rkt 1 01/data.txt
+      run: racket 1/recursive.rkt 1 1/data.txt
     - name: day 2 part i
-      run: racket 02/program.rkt 02/input.txt
+      run: racket 2/program.rkt 2/input.txt
     - name: day 2 part i again
-      run: racket 02/again.rkt 02/input.txt
+      run: racket 2/again.rkt 2/input.txt
     - name: day 2 part ii
-      run: racket 02/part-ii.rkt 02/input.txt
+      run: racket 2/part-ii.rkt 2/input.txt
     - name: day 3 parts i & ii
-      run: racket 03/program.rkt 03/input.txt
+      run: racket 3/program.rkt 3/input.txt
     - name: day 4 parts i & ii
-      run: racket 04/program.rkt 04/data.txt
+      run: racket 4/program.rkt 4/data.txt
     - name: day 6 part i racket
-      run: racket 06/program.rkt 80 06/input.txt
+      run: racket 6/program.rkt 80 6/input.txt
     - name: day 6 part i python
-      run: venv/bin/python 06/program.py 80 06/input.txt
+      run: venv/bin/python 6/program.py 80 6/input.txt
     - name: day 6 part ii racket
-      run: racket 06/program.rkt 256 06/input.txt
+      run: racket 6/program.rkt 256 6/input.txt
     - name: day 6 part ii python
-      run: venv/bin/python 06/program.py 256 06/input.txt
+      run: venv/bin/python 6/program.py 256 6/input.txt
     - name: day 7 part i & ii
-      run: racket 07/program.rkt 07/input.txt
+      run: racket 7/program.rkt 7/input.txt
     - name: day 8 part i & ii
-      run: racket 08/program.rkt 08/input.txt
+      run: racket 8/program.rkt 8/input.txt
     - name: day 9
-      run: racket 09/program.rkt 09/input.txt
+      run: racket 9/program.rkt 9/input.txt
     - name: day 10
       run: racket 10/program.rkt 10/input.txt
