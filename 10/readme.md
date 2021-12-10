@@ -24,12 +24,12 @@ Something funny happened with the website today.
 
 It kept telling me I got the wrong answer in part i
 
-![wrong answer message](./Screenshot-from-2021-12-10-07-16-07.png)
+![right answer message](./Screenshot-from-2021-12-10-07-17-21.png)
 
 And then when I went followed the link back to the question and tried to look
 at the instructions closely and the input to find the curve ball that wasn't
 in the example... I noticed this eventually as I got down the page
 
-![right answer message](./Screenshot-from-2021-12-10-07-17-21.png)
+![wrong answer message](./Screenshot-from-2021-12-10-07-16-07.png)
 
 Besides that everything went pretty smooth today!
