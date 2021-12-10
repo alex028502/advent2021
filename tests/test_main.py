@@ -254,4 +254,4 @@ def test_10(data_dir, sut_dir):
     input_file_path = "%s/10.txt" % data_dir
 
     output = get_output("%s/10/program.rkt" % sut_dir, input_file_path)
-    assert output == "26397"
+    assert output == "part i: 26397\npart ii: 288957"

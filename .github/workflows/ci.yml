@@ -61,5 +61,5 @@ jobs:
       run: racket 8/program.rkt 8/input.txt
     - name: day 9
       run: racket 9/program.rkt 9/input.txt
-    - name: day 10 part i
+    - name: day 10
       run: racket 10/program.rkt 10/input.txt
