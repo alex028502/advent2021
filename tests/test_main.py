@@ -255,3 +255,29 @@ def test_10(data_dir, sut_dir):
 
     output = get_output("%s/10/program.rkt" % sut_dir, input_file_path)
     assert output == "part i: 26397\npart ii: 288957"
+
+
+test_cases_11 = [
+    ["11-mini", 0, 0],  # nothing
+    ["11-mini", 1, 9],  # shown in example
+    ["11-mini", 2, 9],  # shown in example
+    ["11", 0, 0],  # nothing
+    ["11", 1, 0],  # nothing after first step in example
+    ["11", 2, 35],  # counted 35 in example
+    ["11", 3, 80],  # counted 45 in next frame in example
+    ["11", 10, 204],  # given in example
+    ["11", 100, 1656],  # given in example
+]
+
+
+@pytest.mark.parametrize("case", test_cases_11)
+def test_11(data_dir, sut_dir, case):
+    f, turns, answer = case
+    input_file_path = "%s/%s.txt" % (data_dir, f)
+    output = get_output(
+        "%s/11/program.rkt" % sut_dir,
+        str(turns),
+        input_file_path,
+    )
+
+    assert output == str(answer)
