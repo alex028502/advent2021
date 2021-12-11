@@ -153,7 +153,7 @@
 ;; the example was less than a thousand so that's what I used, and then
 ;; luckily the answer to my real puzzle input was also less than a thousand
 ;; to I didn't have to redefine infinity - this could have been another param
-(define inifinity
+(define infinity
   (expt 2 10))
 
 ;; ---------------
