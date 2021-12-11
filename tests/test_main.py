@@ -281,3 +281,37 @@ def test_11(data_dir, sut_dir, case):
     )
 
     assert output == str(answer)
+
+
+# the funny thing about this program is that it's work for two boards in the
+# same file and I didn't even plan that! I am going to take advantage of that
+# for part two take advantage of this for error checking
+def test_11_special_case(data_dir, sut_dir, tmp_path):
+    turns = 2
+    # we know we have two cases for two files for 2 turns
+    matching_cases = list(filter(lambda case: case[1] == turns, test_cases_11))
+    assert len(matching_cases) == 2
+    # generate a combined input file with a blank line between
+    # want to use existing helpers so using cat to combine the files
+    # could have made the middle file '-' and then piped in \n but then again
+    # would have to modify helpers
+    # and since this test is sort of an extra curricular activity
+    # I don't want to modify too many things if I don't have to
+    spacer_file = raw_input_file(tmp_path, "\n")
+    combined_input = get_output_from(
+        "cat",
+        "%s/%s.txt" % (data_dir, matching_cases[0][0]),
+        spacer_file,
+        "%s/%s.txt" % (data_dir, matching_cases[1][0]),
+    )
+
+    input_file_path = raw_input_file(tmp_path, combined_input)
+    answer = matching_cases[0][2] + matching_cases[1][2]
+
+    output = get_output(
+        "%s/11/program.rkt" % sut_dir,
+        str(turns),
+        input_file_path,
+    )
+
+    assert output == str(answer)
