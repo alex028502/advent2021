@@ -257,6 +257,8 @@ def test_10(data_dir, sut_dir):
     assert output == "part i: 26397\npart ii: 288957"
 
 
+# if I turn everything into a string in the test with str then I can put int
+# or string into the test cases!
 test_cases_11 = [
     ["11-mini", 0, 0],  # nothing
     ["11-mini", 1, 9],  # shown in example
@@ -267,6 +269,9 @@ test_cases_11 = [
     ["11", 3, 80],  # counted 45 in next frame in example
     ["11", 10, 204],  # given in example
     ["11", 100, 1656],  # given in example
+    ["11-special", 100, 20],  # two independent octopuses
+    ["11-special", "--predict-synchroflash", "infinity"],  # "no solution"
+    ["11", "--predict-synchroflash", 195],  # part ii example
 ]
 
 

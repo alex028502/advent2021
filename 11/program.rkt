@@ -31,8 +31,12 @@
       (curry map string->list)
       (curry map (curry map char->number))
       hash-board
-      (curry take-turns (string->number turns))
-      last))
+      (curry operation turns)))
+
+(define (operation arg board)
+  (if (equal? "--predict-synchroflash" arg)
+      (predict-synchroflash board)
+      (last (take-turns (string->number arg) board))))
 
 ;; different from standard function char->integer which gets the ascii value
 (define (char->number char)
@@ -129,6 +133,28 @@
           #f)
       (find-next-epicenter board (hash-keys board))))
 
+;; part ii..
+
+;; some functions have names that makes more sense in the context of part i
+;; and I am just passing in zero as the flash count into take-turn instead
+;; of changing the existing function
+
+;; I actually made this, tried it out, and then added one to the starting point
+;; instead of actually trying to understand the source of the off by 1 issue
+;; but automated tests and off by one errors kind of work well together
+(define (predict-synchroflash board [turns 1])
+  (let ([situation (take-turn board 0)])
+    (if (= turns infinity) ;; don't search forever
+        "infinity"
+        (if (= (last situation) (hash-count board))
+           turns
+           (predict-synchroflash (car situation) (+ turns 1))))))
+
+;; the example was less than a thousand so that's what I used, and then
+;; luckily the answer to my real puzzle input was also less than a thousand
+;; to I didn't have to redefine infinity - this could have been another param
+(define infinity
+  (expt 2 10))
 
 ;; ---------------
 
