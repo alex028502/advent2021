@@ -134,8 +134,7 @@
 
 (display (/> (current-command-line-arguments)
              (lambda (x) (list (vector-ref x 0) (vector-ref x 1)))
-             (curry apply main)
-             identity))
+             (curry apply main)))
 
 (display "\n")
 
