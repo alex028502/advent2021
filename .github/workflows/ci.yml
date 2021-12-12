@@ -67,3 +67,5 @@ jobs:
       run: racket 11/program.rkt 100 11/input.txt
     - name: day 11 part ii
       run: racket 11/program.rkt --predict-synchroflash 11/input.txt
+    - name: day 12 part i
+      run: racket 12/program.rkt 12/input.txt
