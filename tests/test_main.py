@@ -321,7 +321,9 @@ def test_11_special_case(data_dir, sut_dir, tmp_path):
 
     assert output == str(answer)
 
+
 test_12_examples = ["small", "medium", "large", "small-ii", "large-ii"]
+
 
 @pytest.mark.parametrize("example", test_12_examples)
 def test_12(data_dir, sut_dir, example):
