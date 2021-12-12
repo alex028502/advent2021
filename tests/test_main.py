@@ -321,8 +321,9 @@ def test_11_special_case(data_dir, sut_dir, tmp_path):
 
     assert output == str(answer)
 
+test_12_examples = ["small", "medium", "large", "small-ii", "large-ii"]
 
-@pytest.mark.parametrize("example", ["small", "medium", "large", "small-ii"])
+@pytest.mark.parametrize("example", test_12_examples)
 def test_12(data_dir, sut_dir, example):
     # use an if this time instead of a list
     # so the test output looks nicer
@@ -336,6 +337,9 @@ def test_12(data_dir, sut_dir, example):
         answer = "36"
     elif example == "medium":
         answer = "19"
+    elif example == "large-ii":
+        sample = "large"
+        answer = 226
     else:
         assert example == "large"
         answer = "226"
@@ -347,4 +351,10 @@ def test_12(data_dir, sut_dir, example):
         input_file_path,
     )
 
-    assert output == answer
+    if example == "large-ii":
+        # we don't know the answer by we know that it is higher than the part i
+        # answer, and this will at least make sure we can calculate something
+        # that big
+        assert int(output) >= answer
+    else:
+        assert output == answer
