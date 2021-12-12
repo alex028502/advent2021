@@ -76,7 +76,7 @@
 ;; and I guess there is a better way to create that list than range if I only
 ;; want to use the length
 (define (take-turns turns board)
-  (foldl (lambda (n situation)
+  (foldl (lambda (_ situation)
            (apply take-turn situation))
          (list board 0)
          (range turns)))
