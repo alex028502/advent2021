@@ -19,7 +19,18 @@
 ;; ---------------
 
 ;; diagonals too this time
-;; if this gets too costly - it could be replaced by a constant OR a macro
+;; changing this to a constant makes all the tests for this day take a little
+;; less time on my little computer
+;; before ============== 12 passed in 19.28s ===========
+;; after =============== 12 passed in 18.91s ===========
+;; but when I tried replacing it with a macro, I got this
+;; ===================== 12 passed in 21.91s ===========
+;; I repeated the experiment a few times
+;; I guess the macro adds a lot of compile time? maybe if I precompiled the
+;; program and then used the same compiled program for all 12 test cases it
+;; would speed it up, but as you can see by the experiment with a constant,
+;; I'll just leave it like this, and calculate once for everything flash
+;; the most expensive part of this program seems to be listing the hash keys
 (define (all-directions)
   (filter (lambda (point)
          (> (apply + (map abs point)) 0))
