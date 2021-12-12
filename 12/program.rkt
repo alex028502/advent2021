@@ -41,13 +41,15 @@
       (list trail)
       (let ([options (hash-ref options-table (car trail))])
         (/> options
-            (curry filter (lambda (option)
-                            (or (is-upper-case option)
-                                (not (member option trail)))))
+            (curry filter (curry option-check trail))
             (curry map (lambda (option)
                          (find-solutions options-table
                                          (cons option trail))))
             (curry apply append)))))
+
+(define (option-check trail option)
+  (or (is-upper-case option)
+      (not (member option trail))))
 
 ;; has to be all upper case but really we could just check the first letter
 ;; or check if it is not all lower case - all of the ones in the problem are
