@@ -322,21 +322,28 @@ def test_11_special_case(data_dir, sut_dir, tmp_path):
     assert output == str(answer)
 
 
-@pytest.mark.parametrize("example", ["small", "medium", "large"])
+@pytest.mark.parametrize("example", ["small", "medium", "large", "small-ii"])
 def test_12(data_dir, sut_dir, example):
     # use an if this time instead of a list
     # so the test output looks nicer
+    sample = example  # names could be better!
+    part = "i"
     if example == "small":
         answer = "10"
+    elif example == "small-ii":
+        sample = "small"
+        part = "ii"
+        answer = "36"
     elif example == "medium":
         answer = "19"
     else:
         assert example == "large"
         answer = "226"
 
-    input_file_path = "%s/12-%s.txt" % (data_dir, example)
+    input_file_path = "%s/12-%s.txt" % (data_dir, sample)
     output = get_output(
         "%s/12/program.rkt" % sut_dir,
+        part,
         input_file_path,
     )
 
