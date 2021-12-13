@@ -360,3 +360,10 @@ def test_12(data_dir, sut_dir, example):
         assert int(output) >= answer
     else:
         assert output == answer
+
+
+def test_13(data_dir, sut_dir):
+    input_file_path = "%s/13.txt" % data_dir
+
+    output = get_output("%s/13/program.rkt" % sut_dir, input_file_path)
+    assert output == "17"
