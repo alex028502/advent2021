@@ -35,10 +35,7 @@
       (curryr string-split "=")
       (curry apply
              (lambda (k v)
-               (list (lookup k '("x" "y")) (string->number v))))))
-
-(define (lookup v lst)
-  (index-of lst v))
+               (list (index-of '("x" "y") k) (string->number v))))))
 
 (define (parse-dot line)
   (/> line
