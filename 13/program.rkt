@@ -37,9 +37,8 @@
              (lambda (k v)
                (list (lookup k '("x" "y")) (string->number v))))))
 
-;; is this the only way to find the index of an item in a list?
 (define (lookup v lst)
-  (- (length lst) (length (member v lst))))
+  (index-of lst v))
 
 (define (parse-dot line)
   (/> line
