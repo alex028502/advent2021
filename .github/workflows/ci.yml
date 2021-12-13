@@ -72,4 +72,4 @@ jobs:
     - name: day 12 part ii
       run: racket 12/program.rkt ii 12/input.txt
     - name: day 13 part i
-      run: racket 13/program.rkt ii 13/input.txt
+      run: racket 13/program.rkt 13/input.txt
