@@ -5,7 +5,7 @@
 (define (main path)
   (/> path
       parse-file
-      (curry apply do-first-fold)))
+      (curry apply do-every-fold)))
 
 (define (parse-file path)
   (/> path
@@ -46,8 +46,14 @@
       (curryr string-split ",")
       (curry map string->number)))
 
-(define (do-first-fold dots folds)
-  (fold-list dots (car folds)))
+
+(define (do-every-fold dots folds [population-log '()])
+  (if (> (length folds) 0)
+      (do-every-fold (fold-list dots (car folds))
+                     (cdr folds)
+                     (cons (length dots) population-log))
+      (list dots
+            (reverse population-log)))) ; no final count in log
 
 (define (fold-list dots fold)
   (/> dots
@@ -84,17 +90,55 @@
 ;;           (classify pred (cdr list) (cons (car list) wheat) chaff)
 ;;           (classify pred (cdr list) wheat (cons (car list) chaff)))))
 
+
+(define (picture dots)
+  (/> (foldl (lambda (dot acc)
+               (apply grid-set acc dot))
+             (apply make-grid (/> dots
+                                  (curry apply map max)
+                                  (curry map add1)))
+             dots)
+      (curry map (curryr string-join ""))
+      (curryr string-join "\n")))
+
+;; I wonder if (make-list h (make-list w ".")) would have worked? Seems like
+;; I might end up with a reference to the same list on every row - since I
+;; or maybe it has a way of copying the list every time it is passed around
+;; will try sometime
+;; (define (make-grid w h)
+;;   (foldl (lambda (_ acc)
+;;            (cons (make-list w ".") acc))
+;;          '()
+;;          (range h)))
+;; Wait a minute!! this works! of course!!!
+;; It makes one of those lazy copies or something!
+(define (make-grid w h)
+  (make-list h (make-list w ".")))
+
+
+;; can only set it to one thing
+(define (grid-set grid x y)
+  (list-set grid y (list-set (list-ref grid y) x "#")))
+
 ;; maybe I need to extract this into a require
 ;; since it has turned out really useful
 (define (/> . args)
    ((apply compose (reverse (cdr args))) (car args)))
 
+(define (add-arrow-to-second first . others)
+  (cons first (cons (string-append (car others) "<-") others)))
 
-
-(display (/> (current-command-line-arguments)
-             (curryr vector-ref 0)
-             main
-             length))
-
-(display "\n")
+(/> (current-command-line-arguments)
+    (curryr vector-ref 0)
+    main
+    (curry apply (lambda (dots population-log)
+                   (begin
+                     (/> population-log
+                         (curry map number->string)
+                         (curry apply add-arrow-to-second)
+                         (curryr string-join "\n")
+                         (curryr display (current-error-port)))
+                     (display "\n" (current-error-port))
+                     (display (picture dots))
+                     (display "\n")))))
 

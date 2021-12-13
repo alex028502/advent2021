@@ -362,8 +362,95 @@ def test_12(data_dir, sut_dir, example):
         assert output == answer
 
 
-def test_13(data_dir, sut_dir):
+def test_13(data_dir, sut_dir, tmp_path):
     input_file_path = "%s/13.txt" % data_dir
+    original_sample_output_file_path = "%s/13-output.txt" % data_dir
+    expected_output_file_path = "%s/13.txt" % tmp_path
 
-    output = get_output("%s/13/program.rkt" % sut_dir, input_file_path)
-    assert output == "17"
+    # ----------------
+    # funny thing happend - I originally decided to use diff to see if the
+    # files were the same so that I didn't have to open the expected output
+    # file here, but then I realised that there are all these extra dots at
+    # the bottom, and I am not going to need those to say what is written
+    # and so it is easier to ignore them, but now I need to process the
+    # so no it turns out I _do_ have to do something to the sample output
+    # but I have already done all this cool stuff with piping subprocesses
+    # around, so I am just gonna generate a file (with grep this time) using
+    # and get rid of the blank lines - I am kind of cheating because I know
+    # that there are no blank columns on the ends in the example except that
+    # and I could just change my sample output file but I think this is better
+    # because I have a record of the relationship between what is in the
+    # question and my test
+
+    with open(expected_output_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "grep",
+                "#",
+                original_sample_output_file_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    # end of funny thing that happened
+    # ----------------
+
+    # this script writes the number of points after each step to stderr
+    # and then the final picture to stdout
+    # (like the number of points is the log)
+
+    # using diff to compare instead of capture stderr and stdout
+    # to avoid opening the expected output file
+    # this isn't any easier or better than just capture the output and
+    # getting the content of the file and asserting that they are the same
+    # I just want to learn to hook two processes together in python while I
+    # am here
+
+    diff_process = subprocess.Popen(
+        ["diff", "-", expected_output_file_path],
+        stdin=subprocess.PIPE,
+    )
+
+    sut_process = subprocess.Popen(
+        [
+            "racket",
+            "%s/13/program.rkt" % sut_dir,
+            input_file_path,
+        ],
+        stdin=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        stdout=diff_process.stdin,
+    )
+
+    stderr = sut_process.communicate()[1].decode("utf-8").strip()
+    # stdout, stderr = map(
+    #     lambda x: x.decode("utf-8").strip(),
+    #     process.communicate()
+    # )
+
+    with open(input_file_path) as f:
+        initial_number_of_dots = len(
+            list(filter(lambda x: "," in x, f.readlines()))
+        )
+
+    diff_process.communicate()
+    # only assert the corret answer to part i, and the initlal number that we
+    # can calculate - if the real thing messes up the arrows, and puts them on
+    # every line, I have no way of testing that with our two fold sample
+    # but no big deal - just like how I don't test the final \n in every
+    # program because I strip the output before asserting
+
+    # just assert what I know about the log
+    # first is number of dots
+    # second number is the part i answer and has an arrow
+    assert stderr.startswith("%s\n17<-\n" % initial_number_of_dots)
+    # there are three answers total
+    assert len(stderr.split("\n")) == 3
+    # no other arrows
+    assert stderr.count("<-") == 1
+
+    # diff is checked by the process above but if it fails the diff will be
+    # in the pytest log that it shows
+    assert not diff_process.returncode
