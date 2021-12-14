@@ -13,13 +13,11 @@
   (/> path
       file->lines
       parse-lines
-      (λ (template-and-rules)
-        (let ([template (car template-and-rules)]
-              [rules (last template-and-rules)])
-          (foldl (λ (_ acc)
-                   (operate rules acc))
-                 template
-                 (range (string->number n)))))))
+      (curry apply (λ (template rules)
+                     (foldl (λ (_ acc)
+                              (operate rules acc))
+                            template
+                            (range (string->number n)))))))
 
 
 (define (operate rules template)
