@@ -456,8 +456,28 @@ def test_13(data_dir, sut_dir, tmp_path):
     assert not diff_process.returncode
 
 
-def test_14(data_dir, sut_dir):
+# try something different so that I can read the case name
+@pytest.mark.parametrize("case", ["rkt-10", "py-10", "py-40"])
+def test_14(data_dir, sut_dir, case):
     input_file_path = "%s/14.txt" % data_dir
+    ext, steps = case.split("-")
 
-    output = get_output("%s/14/program.rkt" % sut_dir, "10", input_file_path)
-    assert output == "1588"
+    if ext == "rkt":
+        interpreter = "racket"
+    else:
+        assert ext == "py"
+        interpreter = "python"
+
+    answers = {
+        "10": 1588,
+        "40": 2188189693529,
+    }
+
+    output = get_output_from(
+        interpreter,
+        "%s/14/program.%s" % (sut_dir, ext),
+        steps,
+        input_file_path,
+    )
+
+    assert output == str(answers[steps])

@@ -15,86 +15,17 @@
       parse-lines
       (curry apply (λ (template rules)
                      (foldl (λ (_ acc)
-                              (apply operate rules acc))
-                            (list (initial-gen template)
-                                  (hash-add-all (make-immutable-hash)
-                                                (string->list template))
-                            (range (string->number n))))))))
-
-;; game plan
-;; NNCB
-;; add Nx2 Cx1 Bx1
-;; NN NC CB
-;; C  B  H
-;; add Cx1 Bx1 Hx1
-;; total Cx2 Bx2 Hx1 Nx2 -- I'm gonna call this _the score_
-;; NC CN NB BC -- I'm gonna call this _the gen_
-
-(define (operate rules gen score)
-  (foldr (λ (item acc)
-           (cons (process rules p))
-         (list score gen)
-         (hash->list gen))))
-      
-
-;; returns two new pairs for the next generation
-;; and a list of items to be added to the total
-(define (process rules p)
-  (let ([new-item (hash-ref rules p)])
-    (list (multify p new-item)
-          new-item)))
-
-       
-      ;; (curry map (curry process rules))
-      ;; (curry apply zip)
-      ;; (curry apply (λ (gen-items score-items)
-                     
+                              (operate rules acc))
+                            template
+                            (range (string->number n)))))))
 
 
-(define (zip . args)
-  (apply map list args))
+(define (operate rules template)
+  (string-upcase (foldl (λ (rule t)
+                          (apply string-full-replace t rule))
+                        template
+                        rules)))
 
-;; I'm gonna see if I can get away with using a list for each generation
-;; if we had kept doing replace, we could have used this on every iteration
-;; > (initial-gen "NNCB")
-;; '#hash(("CB" . 1) ("NC" . 1) ("NN" . 1))
-(define (initial-gen template)
-  (hash-add-all (make-immutable-hash)
-                (map (curry substring template)
-                     (range 0 (- (string-length template) 1))
-                     (range 2 (+ (string-length template) 1)))))
-
-
-           
-(define (hash-add-all hash lst)
-  (foldl (λ (next acc)
-           (hash-add acc next))
-         hash
-         lst))
-
-;; for counting items in a hash
-;; > (hash-add (make-immutable-hash '((1 . 1))) 1)
-;; '#hash((1 . 2))
-;; > (hash-add (make-immutable-hash '((1 . 1))) 2)
-;; '#hash((1 . 1) (2 . 1))
-(define (hash-add hash item)
-  (if (hash-has-key? hash item)
-      (hash-update hash item add1)
-      (hash-add (hash-set hash item 0) item)))
-
-;; > (multify "AB" "C")
-;; '("AC" "CB")
-(define (multify p new-item)
-  (/> p
-      string->list
-      (curry map list)
-      (curry map list->string)
-      (curry apply (λ (a b)
-                     (list (string-append a new-item)
-                           (string-append new-item b))))))
-      
-
- 
 ; even if we use "all" we still get this
 ;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
 ;; "A1AA1A"
@@ -109,13 +40,39 @@
         (/> lines
             (curry filter (curryr string-contains? "->"))
             (curry map parse-rule)
-            (curry apply cons)
-            make-immutable-hash)))
+            (curry map format-rule))))
+            ;; (curry map (λ (rule)
+            ;;              (list rule (reverse-rule rule))))
+            ;; (curry apply append))
+
 
 (define (parse-rule line)
   (/> line
       (curryr string-split "->") ;; could just split on " -> "
       (curry map string-trim))) ;; but will trim instead
+
+;; replace the second item with something that can find/replace
+;; > (format-rule '("AB" "c"))
+;; '("AB" "AcB")
+(define (format-rule raw-rule)
+  (list (car raw-rule)
+        (list->string (list (string-ref (car raw-rule) 0)
+                            (/> raw-rule
+                                last
+                                string-downcase
+                                (curryr string-ref 0))
+                            (string-ref (car raw-rule) 1)))))
+
+;; OK it turns out adjacent means in the same order
+;; I thought te NC rule would apply to CN
+;; (define (reverse-rule rule)
+;;   (map (λ (str)
+;;          (/> str ; no string reverse function?!?!
+;;              string->list
+;;              reverse
+;;              list->string))
+;;        rule))
+
 
 (define (most-and-least lst [result #f])
   (if result
