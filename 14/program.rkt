@@ -9,46 +9,39 @@
 ;; explanation - add the stuff that adds up the answer is separate
 ;; > (main "4" "../tests/data/14.txt")
 ;; "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"
-;; except this will show the answer backwards every second time
-;; which won't make any difference for counting
 (define (main n path)
       (/> path
           file->lines
           parse-lines
           (λ (template-and-rules)
-            (foldl (λ (n acc)
-                     (apply operate (odd? n) acc))
+            (foldl (λ (_ acc)
+                     (apply operate acc))
                    template-and-rules
                    (range (string->number n))))
-          car
-          list->string))
+          car))
 
-;; template is reversed each iteration so rules need to be reversed too since
-;; I discovered earlier they don't want to apply them in both directions
-;; but the rules only have to flip once, or even if I flip them every time
-;; it always takes the same amount of time but the polymer will keep growing
-(define (operate flip todo rules-hash [done '()])
-  (if (= 1 (length todo))
-      (list (cons (car todo) done) rules-hash)
-      (let ([key (list->string ((if flip reverse identity) (take todo 2)))])
-        (if (hash-has-key? rules-hash key)
-            (operate flip
-                     (cdr todo)
-                     rules-hash
-                     (cons (hash-ref rules-hash key)
-                           (cons (car todo) done)))
-            (operate flip
-                     (cdr todo)
-                     rules-hash
-                     (cons (car todo) done))))))
+(define (operate template rules)
+  (list (string-upcase (foldl (λ (rule t)
+                                (apply string-full-replace t rule))
+                              template
+                              rules))
+        rules))
+
+; even if we use "all" we still get this
+;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
+;; "A1AA1A"
+;; (doesn't replace the ones that have already been involved in a replace
+(define (string-full-replace str from to)
+  (if (string-contains? str from)
+      (string-full-replace (string-replace str from to) from to)
+      str))
 
 (define (parse-lines lines)
-  (list (string->list (car lines))
+  (list (car lines)
         (/> lines
             (curry filter (curryr string-contains? "->"))
             (curry map parse-rule)
-            (curry map format-rule)
-            make-immutable-hash)))
+            (curry map format-rule))))
             ;; (curry map (λ (rule)
             ;;              (list rule (reverse-rule rule))))
             ;; (curry apply append))
@@ -59,15 +52,17 @@
       (curryr string-split "->") ;; could just split on " -> "
       (curry map string-trim))) ;; but will trim instead
 
-;; make it so that it can go into a hash
-;; > (format-rule '("AB" "C"))
-;; '("AB" . #\C)
+;; replace the second item with something that can find/replace
+;; > (format-rule '("AB" "c"))
+;; '("AB" "AcB")
 (define (format-rule raw-rule)
-  (cons (car raw-rule)
-        (/> raw-rule
-            last
-            string->list
-            (curryr list-ref 0))))
+  (list (car raw-rule)
+        (list->string (list (string-ref (car raw-rule) 0)
+                            (/> raw-rule
+                                last
+                                string-downcase
+                                (curryr string-ref 0))
+                            (string-ref (car raw-rule) 1)))))
 
 ;; OK it turns out adjacent means in the same order
 ;; I thought te NC rule would apply to CN
