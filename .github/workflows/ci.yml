@@ -77,3 +77,5 @@ jobs:
       with:
         name: result-13
         path: result-13.txt
+    - name: day 14
+      run: racket 14/program.rkt 10 14/input.txt

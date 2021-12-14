@@ -454,3 +454,10 @@ def test_13(data_dir, sut_dir, tmp_path):
     # diff is checked by the process above but if it fails the diff will be
     # in the pytest log that it shows
     assert not diff_process.returncode
+
+
+def test_14(data_dir, sut_dir):
+    input_file_path = "%s/14.txt" % data_dir
+
+    output = get_output("%s/14/program.rkt" % sut_dir, "10", input_file_path)
+    assert output == "1588"
