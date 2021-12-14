@@ -10,15 +10,15 @@
 ;; > (main "4" "../tests/data/14.txt")
 ;; "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"
 (define (main n path)
-      (/> path
-          file->lines
-          parse-lines
-          (λ (template-and-rules)
-            (foldl (λ (_ acc)
-                     (apply operate acc))
-                   template-and-rules
-                   (range (string->number n))))
-          car))
+  (/> path
+      file->lines
+      parse-lines
+      (λ (template-and-rules)
+        (foldl (λ (_ acc)
+                 (apply operate acc))
+               template-and-rules
+               (range (string->number n))))
+      car))
 
 (define (operate template rules)
   (list (string-upcase (foldl (λ (rule t)
