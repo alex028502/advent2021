@@ -79,5 +79,5 @@ jobs:
         path: result-13.txt
     - name: day 14 part i
       run: racket 14/program.rkt 10 14/input.txt
-    - name: day 14 part ii
-      run: timeout 30 racket 14/program.rkt 40 14/input.txt || echo too slow $?
+    - name: day 14 part ii (temporary)
+      run: racket 14/program.rkt 40 14/input.txt
