@@ -15,16 +15,56 @@
       parse-lines
       (curry apply (λ (template rules)
                      (foldl (λ (_ acc)
-                              (operate rules acc))
-                            template
+                              (/> acc
+                                  (curry map (curry cooperate rules))
+                                  (curry apply append)
+                                  consolidate))
+                            (list (cons template 1))
                             (range (string->number n)))))))
 
+;; > (consolidate '((1 . 2) (2 . 2) (1 . 5)))
+;; '((1 . 7) (2 . 2))
+(define (consolidate items)
+  (/> (foldl (λ (item acc)
+               (if (hash-has-key? acc (car item))
+                   (hash-update acc (car item) (curry + (cdr item)))
+                   (hash-set acc (car item) (cdr item))))
+             (make-immutable-hash)
+             items)
+      hash->list))
 
+;; name just sounds cool
+;; using cons instead of list because that is what we get when we explode the
+;; hash after each dedupe
+(define (cooperate rules multi-template)
+  (let ([template (car multi-template)]
+        [frequency (cdr multi-template)])
+    (/> (operate rules template)
+        (curry map (curryr cons frequency)))))
+
+;; once two letters are in next to each other and will never have anything
+;; inserted between, they will stay that way forever. I am going to break the
+;; string into two strings right at that point, and then group identical
+;; strings
 (define (operate rules template)
-  (string-upcase (foldl (λ (rule t)
-                          (apply string-full-replace t rule))
-                        template
-                        rules)))
+  (/> (foldl (λ (rule t)
+               (apply string-full-replace t rule))
+             (fill-with-0 template)
+             rules)
+      (curryr string-split "0")))
+
+;; there are probably much quicker ways to do this
+;; but now that I have realised that holding a terrabyte
+;; string is the biggest problem - I will worry about this if the
+;; the profiler tells me to worry
+;; > (fill-with-0 "TEST")
+;; "T0E0S0T"
+(define (fill-with-0 str)
+  (/> str
+      string->list
+      (curry map list)
+      (curry map list->string)
+      (curryr string-join "0")))
 
 ; even if we use "all" we still get this
 ;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
@@ -52,16 +92,14 @@
       (curry map string-trim))) ;; but will trim instead
 
 ;; replace the second item with something that can find/replace
-;; > (format-rule '("AB" "c"))
-;; '("AB" "AcB")
+;; > (format-rule '("AB" "C"))
+;; '("A0B" "ACB")
 (define (format-rule raw-rule)
-  (list (car raw-rule)
-        (list->string (list (string-ref (car raw-rule) 0)
-                            (/> raw-rule
-                                last
-                                string-downcase
-                                (curryr string-ref 0))
-                            (string-ref (car raw-rule) 1)))))
+  (let ([a (string-ref (car raw-rule) 0)]
+        [b (string-ref (car raw-rule) 1)]
+        [c (string-ref (last raw-rule) 0)])
+    (map list->string (list (list a #\0 b)
+                            (list a c b)))))
 
 ;; OK it turns out adjacent means in the same order
 ;; I thought te NC rule would apply to CN
