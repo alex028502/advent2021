@@ -20,21 +20,17 @@
                    (range (string->number n))))
           car))
 
-(define (operate template rules)
-  (list (string-upcase (foldl (λ (rule t)
-                                (apply string-full-replace t rule))
-                              template
-                              rules))
-        rules))
-
-; even if we use "all" we still get this
-;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
-;; "A1AA1A"
-;; (doesn't replace the ones that have already been involved in a replace
-(define (string-full-replace str from to)
-  (if (string-contains? str from)
-      (string-full-replace (string-replace str from to) from to)
-      str))
+;; template is reversed each iteration so rules need to be reversed too since
+;; I discovered earlier they don't want to apply them in both directions
+;; but the rules only have to flip once, or even if I flip them every time
+;; it always takes the same amount of time but the polymer will keep growing
+(define (operate rules-hash flip todo [done '()])
+  (if (= 1 (length todo))
+      (cons (car template) done)
+      (let ([key (list->string ((if flip reverse identity) (take todo 2)))])
+        (if (hash-has-key? rules-hash key)
+            (operate rules-hash flip (cdr todo) (cons (car todo) 
+          
 
 (define (parse-lines lines)
   (list (car lines)
