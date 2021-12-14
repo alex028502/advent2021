@@ -9,35 +9,46 @@
 ;; explanation - add the stuff that adds up the answer is separate
 ;; > (main "4" "../tests/data/14.txt")
 ;; "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB"
+;; except this will show the answer backwards every second time
+;; which won't make any difference for counting
 (define (main n path)
       (/> path
           file->lines
           parse-lines
           (λ (template-and-rules)
-            (foldl (λ (_ acc)
-                     (apply operate acc))
+            (foldl (λ (n acc)
+                     (apply operate (odd? n) acc))
                    template-and-rules
                    (range (string->number n))))
-          car))
+          car
+          list->string))
 
 ;; template is reversed each iteration so rules need to be reversed too since
 ;; I discovered earlier they don't want to apply them in both directions
 ;; but the rules only have to flip once, or even if I flip them every time
 ;; it always takes the same amount of time but the polymer will keep growing
-(define (operate rules-hash flip todo [done '()])
+(define (operate flip todo rules-hash [done '()])
   (if (= 1 (length todo))
-      (cons (car template) done)
+      (list (cons (car todo) done) rules-hash)
       (let ([key (list->string ((if flip reverse identity) (take todo 2)))])
         (if (hash-has-key? rules-hash key)
-            (operate rules-hash flip (cdr todo) (cons (car todo) 
-          
+            (operate flip
+                     (cdr todo)
+                     rules-hash
+                     (cons (hash-ref rules-hash key)
+                           (cons (car todo) done)))
+            (operate flip
+                     (cdr todo)
+                     rules-hash
+                     (cons (car todo) done))))))
 
 (define (parse-lines lines)
-  (list (car lines)
+  (list (string->list (car lines))
         (/> lines
             (curry filter (curryr string-contains? "->"))
             (curry map parse-rule)
-            (curry map format-rule))))
+            (curry map format-rule)
+            make-immutable-hash)))
             ;; (curry map (λ (rule)
             ;;              (list rule (reverse-rule rule))))
             ;; (curry apply append))
@@ -48,17 +59,15 @@
       (curryr string-split "->") ;; could just split on " -> "
       (curry map string-trim))) ;; but will trim instead
 
-;; replace the second item with something that can find/replace
-;; > (format-rule '("AB" "c"))
-;; '("AB" "AcB")
+;; make it so that it can go into a hash
+;; > (format-rule '("AB" "C"))
+;; '("AB" . #\C)
 (define (format-rule raw-rule)
-  (list (car raw-rule)
-        (list->string (list (string-ref (car raw-rule) 0)
-                            (/> raw-rule
-                                last
-                                string-downcase
-                                (curryr string-ref 0))
-                            (string-ref (car raw-rule) 1)))))
+  (cons (car raw-rule)
+        (/> raw-rule
+            last
+            string->list
+            (curryr list-ref 0))))
 
 ;; OK it turns out adjacent means in the same order
 ;; I thought te NC rule would apply to CN
