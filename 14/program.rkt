@@ -14,18 +14,19 @@
       file->lines
       parse-lines
       (λ (template-and-rules)
-        (foldl (λ (_ acc)
-                 (apply operate acc))
-               template-and-rules
-               (range (string->number n))))
-      car))
+        (let ([template (car template-and-rules)]
+              [rules (last template-and-rules)])
+          (foldl (λ (_ acc)
+                   (operate rules acc))
+                 template
+                 (range (string->number n)))))))
 
-(define (operate template rules)
-  (list (string-upcase (foldl (λ (rule t)
-                                (apply string-full-replace t rule))
-                              template
-                              rules))
-        rules))
+
+(define (operate rules template)
+  (string-upcase (foldl (λ (rule t)
+                          (apply string-full-replace t rule))
+                        template
+                        rules)))
 
 ; even if we use "all" we still get this
 ;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
