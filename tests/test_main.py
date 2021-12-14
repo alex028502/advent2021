@@ -466,7 +466,7 @@ def test_14(data_dir, sut_dir, case):
         interpreter = "racket"
     else:
         assert ext == "py"
-        interpreter = "python"
+        interpreter = "venv/bin/python"
 
     answers = {
         "10": 1588,
