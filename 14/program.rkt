@@ -15,57 +15,86 @@
       parse-lines
       (curry apply (λ (template rules)
                      (foldl (λ (_ acc)
-                              (/> acc
-                                  (curry map (curry cooperate rules))
-                                  (curry apply append)
-                                  consolidate))
-                            (list (cons template 1))
-                            (range (string->number n)))))))
+                              (apply operate rules acc))
+                            (list (initial-gen template)
+                                  (hash-add-all (make-immutable-hash)
+                                                (string->list template))
+                            (range (string->number n))))))))
 
-;; > (consolidate '((1 . 2) (2 . 2) (1 . 5)))
-;; '((1 . 7) (2 . 2))
-(define (consolidate items)
-  (/> (foldl (λ (item acc)
-               (if (hash-has-key? acc (car item))
-                   (hash-update acc (car item) (curry + (cdr item)))
-                   (hash-set acc (car item) (cdr item))))
-             (make-immutable-hash)
-             items)
-      hash->list))
+;; game plan
+;; NNCB
+;; add Nx2 Cx1 Bx1
+;; NN NC CB
+;; C  B  H
+;; add Cx1 Bx1 Hx1
+;; total Cx2 Bx2 Hx1 Nx2 -- I'm gonna call this _the score_
+;; NC CN NB BC -- I'm gonna call this _the gen_
 
-;; name just sounds cool
-;; using cons instead of list because that is what we get when we explode the
-;; hash after each dedupe
-(define (cooperate rules multi-template)
-  (let ([template (car multi-template)]
-        [frequency (cdr multi-template)])
-    (/> (operate rules template)
-        (curry map (curryr cons frequency)))))
+(define (operate rules gen score)
+  (foldr (λ (item acc)
+           (cons (process rules p))
+         (list score gen)
+         (hash->list gen))))
+      
 
-;; once two letters are in next to each other and will never have anything
-;; inserted between, they will stay that way forever. I am going to break the
-;; string into two strings right at that point, and then group identical
-;; strings
-(define (operate rules template)
-  (/> (foldl (λ (rule t)
-               (apply string-full-replace t rule))
-             (fill-with-0 template)
-             rules)
-      (curryr string-split "0")))
+;; returns two new pairs for the next generation
+;; and a list of items to be added to the total
+(define (process rules p)
+  (let ([new-item (hash-ref rules p)])
+    (list (multify p new-item)
+          new-item)))
 
-;; there are probably much quicker ways to do this
-;; but now that I have realised that holding a terrabyte
-;; string is the biggest problem - I will worry about this if the
-;; the profiler tells me to worry
-;; > (fill-with-0 "TEST")
-;; "T0E0S0T"
-(define (fill-with-0 str)
-  (/> str
+       
+      ;; (curry map (curry process rules))
+      ;; (curry apply zip)
+      ;; (curry apply (λ (gen-items score-items)
+                     
+
+
+(define (zip . args)
+  (apply map list args))
+
+;; I'm gonna see if I can get away with using a list for each generation
+;; if we had kept doing replace, we could have used this on every iteration
+;; > (initial-gen "NNCB")
+;; '#hash(("CB" . 1) ("NC" . 1) ("NN" . 1))
+(define (initial-gen template)
+  (hash-add-all (make-immutable-hash)
+                (map (curry substring template)
+                     (range 0 (- (string-length template) 1))
+                     (range 2 (+ (string-length template) 1)))))
+
+
+           
+(define (hash-add-all hash lst)
+  (foldl (λ (next acc)
+           (hash-add acc next))
+         hash
+         lst))
+
+;; for counting items in a hash
+;; > (hash-add (make-immutable-hash '((1 . 1))) 1)
+;; '#hash((1 . 2))
+;; > (hash-add (make-immutable-hash '((1 . 1))) 2)
+;; '#hash((1 . 1) (2 . 1))
+(define (hash-add hash item)
+  (if (hash-has-key? hash item)
+      (hash-update hash item add1)
+      (hash-add (hash-set hash item 0) item)))
+
+;; > (multify "AB" "C")
+;; '("AC" "CB")
+(define (multify p new-item)
+  (/> p
       string->list
       (curry map list)
       (curry map list->string)
-      (curryr string-join "0")))
+      (curry apply (λ (a b)
+                     (list (string-append a new-item)
+                           (string-append new-item b))))))
+      
 
+ 
 ; even if we use "all" we still get this
 ;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
 ;; "A1AA1A"
@@ -80,37 +109,13 @@
         (/> lines
             (curry filter (curryr string-contains? "->"))
             (curry map parse-rule)
-            (curry map format-rule))))
-            ;; (curry map (λ (rule)
-            ;;              (list rule (reverse-rule rule))))
-            ;; (curry apply append))
-
+            (curry apply cons)
+            make-immutable-hash)))
 
 (define (parse-rule line)
   (/> line
       (curryr string-split "->") ;; could just split on " -> "
       (curry map string-trim))) ;; but will trim instead
-
-;; replace the second item with something that can find/replace
-;; > (format-rule '("AB" "C"))
-;; '("A0B" "ACB")
-(define (format-rule raw-rule)
-  (let ([a (string-ref (car raw-rule) 0)]
-        [b (string-ref (car raw-rule) 1)]
-        [c (string-ref (last raw-rule) 0)])
-    (map list->string (list (list a #\0 b)
-                            (list a c b)))))
-
-;; OK it turns out adjacent means in the same order
-;; I thought te NC rule would apply to CN
-;; (define (reverse-rule rule)
-;;   (map (λ (str)
-;;          (/> str ; no string reverse function?!?!
-;;              string->list
-;;              reverse
-;;              list->string))
-;;        rule))
-
 
 (define (most-and-least lst [result #f])
   (if result
