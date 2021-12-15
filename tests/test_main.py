@@ -481,3 +481,11 @@ def test_14(data_dir, sut_dir, case):
     )
 
     assert output == str(answers[steps])
+
+
+def test_15(data_dir, sut_dir):
+    input_file_path = "%s/15.txt" % data_dir
+
+    output = get_output("%s/15/program.rkt" % sut_dir, input_file_path)
+    assert output == "40"
+
