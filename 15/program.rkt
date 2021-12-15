@@ -5,6 +5,13 @@
 (define (/> . args)
    ((apply compose (reverse (cdr args))) (car args)))
 
+;; let's take a step back
+;; I peaked and the real input is like 100x100
+;; which means 200 steps
+;; so would need every order of 100 right steps and 100 down steps
+;; which is a lot  200! / 100! / 100! ?? maybe
+;; if it's that I should not try what I was about to try
+
 ;; this is a lot like day 12
 ;; but having learned my lesson on day 14 I'm going to store only the current
 ;; score and not the history since I only seem to be able to go right and down
