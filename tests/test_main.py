@@ -490,8 +490,6 @@ def test_14(data_dir, sut_dir, case):
 # I am still leaving the racket program here to show that it passes with the
 # example they gave, but I made up my own example after this that only work
 # with my emergency python program
-# EXCEPT...
-# that's not right answer either!
 
 
 @pytest.mark.parametrize("language", ["venv/bin/python", "racket"])
@@ -563,3 +561,16 @@ def test_15_special_cases(data_dir, sut_dir, tmp_path, case):
 
     output = get_output_from("venv/bin/python", program, input_file_path)
     assert output == right_answer
+
+
+def test_15_part_ii(data_dir, sut_dir):
+    program = "%s/15/program.py" % sut_dir
+    input_file_path = "%s/15.txt" % data_dir
+
+    output = get_output_from(
+        "venv/bin/python",
+        program,
+        input_file_path,
+        "--5x5",
+    )
+    assert output == "315"

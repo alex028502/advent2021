@@ -2,14 +2,38 @@ import sys
 
 input_file = sys.argv[1]
 
+times5 = len(sys.argv) == 3
+
 caves = []
 risk_totals = {
     (0, 0): 0,
 }
 
+
+def increment_list(l, n):
+    return list(map(lambda x: (x + n - 1) % 9 + 1, l))
+
+
 with open(input_file) as f:
     for line in f:
-        caves.append(list(map(int, list(line.strip()))))
+        l = list(map(int, list(line.strip())))
+        ls = [l]
+        if times5:
+            for n in range(1, 5):
+                ls.append(increment_list(l, n))
+
+        big_list = []
+        for ll in ls:
+            big_list = big_list + ll
+
+        caves.append(big_list)
+
+
+if times5:
+    original_length = len(caves)
+    for n in range(1, 5):
+        for line in range(original_length):
+            caves.append(increment_list(caves[line], n))
 
 
 def get_risk_level(x, y):
