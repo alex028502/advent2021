@@ -483,8 +483,30 @@ def test_14(data_dir, sut_dir, case):
     assert output == str(answers[steps])
 
 
-def test_15(data_dir, sut_dir):
+def test_15(data_dir, sut_dir, tmp_path):
+    program = "%s/15/program.rkt" % sut_dir
     input_file_path = "%s/15.txt" % data_dir
 
-    output = get_output("%s/15/program.rkt" % sut_dir, input_file_path)
+    output = get_output(program, input_file_path)
     assert output == "40"
+
+    # my was wrong somehow so first thing I am going to do is remove a line
+    # from the bottom and see if I still get the right answer and maybe if I
+    # am lucky the assymetry will lead to an error
+
+    truncated_input_file_path = "%s/truncated.txt" % tmp_path
+
+    with open(truncated_input_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "head",
+                "-n-1",
+                input_file_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    truncated_output = get_output(program, truncated_input_file_path)
+    assert truncated_output == "39"
