@@ -510,3 +510,37 @@ def test_15(data_dir, sut_dir, tmp_path):
 
     truncated_output = get_output(program, truncated_input_file_path)
     assert truncated_output == "39"
+
+    # it could be something like this
+
+
+special_cases_15 = [
+    [
+        "1111",
+        "9991",
+        "1111",
+        "1999",
+        "1111",
+    ],
+    [
+        "19111",
+        "19191",
+        "19191",
+        "11191",
+    ],
+]
+
+
+@pytest.mark.parametrize("case", special_cases_15)
+def test_15_special_cases(data_dir, sut_dir, tmp_path, case):
+    program = "%s/15/program.rkt" % sut_dir
+    wrong_answer = "15"
+    right_answer = "13"
+
+    input_file_path = "%s/back-n-forth.txt" % tmp_path
+    with open(input_file_path, "w") as f:
+        f.write("\n".join(case) + "\n")
+
+    output = get_output(program, input_file_path)
+    assert output != right_answer  # this test is disabled here
+    assert output == wrong_answer
