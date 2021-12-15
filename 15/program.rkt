@@ -5,35 +5,6 @@
 (define (/> . args)
    ((apply compose (reverse (cdr args))) (car args)))
 
-;; let's take a step back
-;; I peaked and the real input is like 100x100
-;; which means 200 steps
-;; so would need every order of 100 right steps and 100 down steps
-;; which is a lot  200! / 100! / 100! ?? maybe
-;; if it's that I should not try what I was about to try
-
-;; this is a lot like day 12
-;; but having learned my lesson on day 14 I'm going to store only the current
-;; score and not the history since I only seem to be able to go right and down
-
-;; I know the answer now - I worked it out, but then vaguely remember my
-;; highschool math teacher doing it on the blackboard - but maybe I am
-;; imagining that
-;; it was good to step back after trying for a few minutes
-;; A B C
-;; D E F
-;; G H I
-;; the total risk to get to any square is the risk of that square plus the
-;; lower of the risk of the box to the left and the box above
-;; the total risk to get to F is the risk of F plus the lower of the total risk
-;; to get to E and the total risk to get to C
-;; and if in step ii, they want to know the route we are gonna take then we
-;; have to pass down the whole path instead of just the adding up the risk
-;; which would make more sense in the story - but I'll figure out how to add
-;; that after. the problem is that I am not planning on using coordinates
-;; to figure this out (and I could) so if they want coordinates of the path in
-;; part ii - it's gonna be a bit messy to put them in - but let's see
-
 (define (main path)
   (/> path
       file->lines

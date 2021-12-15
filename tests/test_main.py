@@ -483,11 +483,28 @@ def test_14(data_dir, sut_dir, case):
     assert output == str(answers[steps])
 
 
-def test_15(data_dir, sut_dir, tmp_path):
-    program = "%s/15/program.rkt" % sut_dir
+# The program I wrote in racket only allows you to move right and down
+# I assumed that from looking at their picture instead of reading the
+# instructions carefully where it said "no diagonals" no I guess they would
+# have said "no up and left" if they had meant that
+# I am still leaving the racket program here to show that it passes with the
+# example they gave, but I made up my own example after this that only work
+# with my emergency python program
+# EXCEPT...
+# that's not right answer either!
+
+
+@pytest.mark.parametrize("language", ["venv/bin/python", "racket"])
+def test_15(data_dir, sut_dir, tmp_path, language):
+    if language == "racket":
+        program = "%s/15/program.rkt" % sut_dir
+    else:
+        assert "python" in language
+        program = "%s/15/program.py" % sut_dir
+
     input_file_path = "%s/15.txt" % data_dir
 
-    output = get_output(program, input_file_path)
+    output = get_output_from(language, program, input_file_path)
     assert output == "40"
 
     # my was wrong somehow so first thing I am going to do is remove a line
@@ -508,7 +525,11 @@ def test_15(data_dir, sut_dir, tmp_path):
         p.communicate()
         assert not p.returncode
 
-    truncated_output = get_output(program, truncated_input_file_path)
+    truncated_output = get_output_from(
+        language,
+        program,
+        truncated_input_file_path,
+    )
     assert truncated_output == "39"
 
     # it could be something like this
@@ -533,14 +554,12 @@ special_cases_15 = [
 
 @pytest.mark.parametrize("case", special_cases_15)
 def test_15_special_cases(data_dir, sut_dir, tmp_path, case):
-    program = "%s/15/program.rkt" % sut_dir
-    wrong_answer = "15"
+    program = "%s/15/program.py" % sut_dir
     right_answer = "13"
 
     input_file_path = "%s/back-n-forth.txt" % tmp_path
     with open(input_file_path, "w") as f:
         f.write("\n".join(case) + "\n")
 
-    output = get_output(program, input_file_path)
-    assert output != right_answer  # this test is disabled here
-    assert output == wrong_answer
+    output = get_output_from("venv/bin/python", program, input_file_path)
+    assert output == right_answer
