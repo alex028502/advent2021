@@ -42,7 +42,8 @@ def neighbours(x, y):
     )
 
 
-for i in range(1000000):
+for i in range(10000):
+    assert i < 3000, "should not take so long"
     risk_totals_copy = dict(risk_totals)
     assert risk_totals_copy == risk_totals, "????"
     # use copy to iterate to trick safeguards
@@ -50,7 +51,7 @@ for i in range(1000000):
         x, y = list(xy)
         for neighbour in neighbours(x, y):
             nx, ny = list(neighbour)
-            calculated_new_risk = get_risk_level(x, y) + risk
+            calculated_new_risk = get_risk_level(nx, ny) + risk
             if risk_totals.get((nx, ny)):
                 if risk_totals[(nx, ny)] <= calculated_new_risk:
                     continue
