@@ -83,3 +83,5 @@ jobs:
       run: venv/bin/python 14/program.py 10 14/input.txt
     - name: day 14 part ii (python)
       run: venv/bin/python 14/program.py 40 14/input.txt
+    - name: day 15 part i
+      run: racket 15/program.py 10 15/input.txt

@@ -488,4 +488,3 @@ def test_15(data_dir, sut_dir):
 
     output = get_output("%s/15/program.rkt" % sut_dir, input_file_path)
     assert output == "40"
-
