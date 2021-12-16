@@ -21,8 +21,10 @@ jobs:
       run: racket --version
     - name: list raco packages in case something is missing
       run: raco pkg show --all
+    - name: print help for this version
+      run: raco pkg install --help || echo ...
     - name: install racket formatter fmt
-      run: raco pkg install --deps search-auto --batch -D fmt
+      run: raco pkg install --deps search-auto --batch --no-docs fmt
     - name: list raco packages again
       run: raco pkg show --all
     - name: Install testing stuff
