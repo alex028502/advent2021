@@ -13,11 +13,11 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8.10
-    - name: Update
-      run: sudo apt-get update
+    - name: Download racket
+      run: wget https://download.racket-lang.org/installers/8.3/racket-8.3-x86_64-linux-cs.sh
     - name: Install racket
-      run: sudo apt-get install -y racket
-    - name: find out racket version we randomly chose
+      run: sudo sh racket-8.3-x86_64-linux-cs.sh --unix-style --dest /usr/
+    - name: find out racket version we chose
       run: racket --version
     - name: list raco packages in case something is missing
       run: raco pkg show --all
