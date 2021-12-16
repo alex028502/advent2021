@@ -87,5 +87,6 @@ jobs:
       run: racket 15/program.rkt 15/input.txt
     - name: day 15 part i (python)
       run: venv/bin/python 15/program.py 15/input.txt
-    - name: day 15 part ii (python)
-      run: venv/bin/python 15/program.py 15/input.txt --5x5
+    # - name: day 15 part ii (python)
+    #   run: venv/bin/python 15/program.py 15/input.txt --5x5
+    # 2881 - takes almost 17 minutes
