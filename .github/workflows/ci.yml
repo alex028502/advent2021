@@ -22,7 +22,7 @@ jobs:
     - name: list raco packages in case something is missing
       run: raco pkg show --all
     - name: install racket formatter fmt
-      run: raco pkg install fmt --batch
+      run: raco pkg install --batch fmt
     - name: list raco packages again
       run: raco pkg show --all
     - name: Install testing stuff
