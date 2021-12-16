@@ -56,9 +56,9 @@
 ;; > (renumberate '(#f #f #t #t #t))
 ;; 7
 (define (renumberate list-of-bools)
-  (string->number (apply string-append (map (lambda (x) (if x "1" "0"))
-                                            list-of-bools))
-                  2))
+  (string->number
+   (apply string-append (map (lambda (x) (if x "1" "0")) list-of-bools))
+   2))
 
 (define (get-gamma all)
   (renumberate (map vote (prepare-dataset-for-voting all))))
@@ -73,8 +73,7 @@
 (define (invert number)
   (- (expt 2 number-of-digits) number 1))
 
-(display (* (get-gamma input)
-            (invert (get-gamma input))))
+(display (* (get-gamma input) (invert (get-gamma input))))
 
 (display "\n")
 
@@ -101,13 +100,13 @@
   (if (= 1 (length options))
       (first options)
       (let ([bit (vote (map (lambda (x) (get-digit pos len x)) options))])
-        (calculate (filter (lambda (x) (op (= 1 (get-digit pos len x)) bit))
-                           options)
-                   len
-                   op
-                   (+ 1 pos)))))
+        (calculate
+         (filter (lambda (x) (op (= 1 (get-digit pos len x)) bit)) options)
+         len
+         op
+         (+ 1 pos)))))
 
 (display (* (calculate numbers number-of-digits co2-check)
-               (calculate numbers number-of-digits o2-check)))
+            (calculate numbers number-of-digits o2-check)))
 
 (display "\n")

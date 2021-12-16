@@ -3,25 +3,21 @@
 (require racket/cmdline)
 
 (define (/> . args)
-   ((apply compose (reverse (cdr args))) (car args)))
+  ((apply compose (reverse (cdr args))) (car args)))
 
 (define (main path)
-  (/> path
-      file->lines
-      create-board
-      solve-puzzle))
+  (/> path file->lines create-board solve-puzzle))
 
 ;; I am going to use vectors this time, and exception handling to deal
 ;; with off board points
 (define (create-board lines)
-  (/>  lines
-       (curry map string->list)
-       (curry map (curry map list))
-       (curry map (curry map list->string))
-       (curry map (curry map string->number))
-       (curry map list->immutable-vector)
-       list->immutable-vector))
-
+  (/> lines
+      (curry map string->list)
+      (curry map (curry map list))
+      (curry map (curry map list->string))
+      (curry map (curry map string->number))
+      (curry map list->immutable-vector)
+      list->immutable-vector))
 
 ;; cycling through coordinates x and y - this might be helpful for part ii
 ;; so will having the entire total risk matrix - but that's not why I am doing
@@ -29,10 +25,10 @@
 (define (solve-puzzle risk-matrix)
   (/> (foldl (λ (y total-risk-matrix)
                (let ([risk-line (vector-ref risk-matrix y)])
-                 (cons (get-total-risk-line risk-line
-                                            (car:> total-risk-matrix
-                                                   (curry get-fake-line
-                                                          (vector-length risk-line))))
+                 (cons (get-total-risk-line
+                        risk-line
+                        (car:> total-risk-matrix
+                               (curry get-fake-line (vector-length risk-line))))
                        total-risk-matrix)))
              '()
              (range (vector-length risk-matrix)))
@@ -68,8 +64,7 @@
 ;; this could be done just as well if not better with an 'if'
 ;; especially since this could fail for a different reason
 (define (car:> p df)
-  (with-handlers ([exn:fail:contract? df])
-    (car p)))
+  (with-handlers ([exn:fail:contract? df]) (car p)))
 
 ;; actually the first fake cave has to be 0 and then infinity after that so
 ;; that the very first cave doesn't choose infinity as the min
@@ -85,12 +80,10 @@
 (define (get-infinity . _)
   (expt 2 30))
 
-
 ;; remember to subtract the first cave because it doesn't count
 (define (compress-into-single-number-to-answer-question total-risk-cave-matrix)
   (- (vector-last (vector-last total-risk-cave-matrix))
      (vector-ref (vector-ref total-risk-cave-matrix 0) 0)))
-
 
 (define (vector-last vec)
   (vector-ref (vector-take-right vec 1) 0))
@@ -101,4 +94,3 @@
              compress-into-single-number-to-answer-question))
 
 (display "\n")
-

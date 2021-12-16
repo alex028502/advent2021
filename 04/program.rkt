@@ -56,29 +56,25 @@
 ;; or I could just depend on my manual repl tests but I might want to rewrite
 ;; this in future as I get better at LISP so a working test would be handy
 (define (card-check card moves)
-  (or (partial-card-check card moves)
-      (partial-card-check (flip card) moves)))
+  (or (partial-card-check card moves) (partial-card-check (flip card) moves)))
 
 ;; be careful - the value changes depending when the game ends
 (define (card-value card moves)
   (* (string->number (last moves))
-     (apply + (map string->number
-                   (filter (lambda (x) (not (member x moves)))
-                           (apply append card))))))
+     (apply +
+            (map string->number
+                 (filter (lambda (x) (not (member x moves)))
+                         (apply append card))))))
 
 ;; if it is a winner, all we need is the score now
 ;; but if is a future winner, we need the whole card still
 ;; so let's just send what we have and let the next function figure out the
 ;; difference
 (define (check-and-score card moves)
-  (if (card-check card moves)
-      (card-value card moves)
-      card))
+  (if (card-check card moves) (card-value card moves) card))
 
 (define (check-all-cards cards moves)
   (map (lambda (x) (check-and-score x moves)) cards))
-
-
 
 ;; let's try passing the index instead of splitting up the list this time
 ;; I tried doing it with a past moves and a future moves argument but since

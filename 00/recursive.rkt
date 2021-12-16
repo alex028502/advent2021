@@ -19,7 +19,8 @@
 ; error from trying to (cdr '()) but that is as good an an error we
 ; could create I guess
 (define (find-complements-in-list candidates)
-  (let ([compliment (find-complement-in-list (car candidates) (cdr candidates))])
+  (let ([compliment (find-complement-in-list (car candidates)
+                                             (cdr candidates))])
     (if compliment
         (list (car candidates) compliment)
         (find-complements-in-list (cdr candidates)))))

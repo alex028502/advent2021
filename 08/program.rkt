@@ -8,7 +8,7 @@
 ;; actually that didn't work with lambda so back to my home made one:
 ;; since it is not always the final argument
 (define (/> . args)
-   ((apply compose (reverse (cdr args))) (car args)))
+  ((apply compose (reverse (cdr args))) (car args)))
 ;; since threading is a module you have to import I could use use their symbol
 ;; but I have already gotten used to my symbol
 
@@ -65,8 +65,10 @@
 (define (all-orders items [tail '()])
   (if (= (set-count items) 0)
       (list tail) ;; but this into list to cancel some other mistake
-      (apply append (set-map items (lambda (x) (all-orders (set-remove items x)
-                                                           (cons x tail)))))))
+      (apply append
+             (set-map items
+                      (lambda (x)
+                        (all-orders (set-remove items x) (cons x tail)))))))
 
 ;; let's take a brake to define the digits in terms of numbers LEDs
 ;; and keep the letters for the incorrect ones
@@ -74,21 +76,21 @@
 ;; except let's put the real letters first because it's less likely to make
 ;; a mistake if we can copy straight from the instructions and leave the math
 ;; to the computer
-(define correct-digits (list (set #\a #\b #\c #\e #\f #\g)
-                             (set #\c #\f)
-                             (set #\a #\c #\d #\e #\g)
-                             (set #\a #\c #\d #\f #\g)
-                             (set #\b #\c #\d #\f)
-                             (set #\a #\b #\d #\f #\g)
-                             (set #\a #\b #\d #\e #\f #\g)
-                             (set #\a #\c #\f)
-                             (set #\a #\b #\c #\d #\e #\f #\g)
-                             (set #\a #\b #\c #\d #\f #\g)))
+(define correct-digits
+  (list (set #\a #\b #\c #\e #\f #\g)
+        (set #\c #\f)
+        (set #\a #\c #\d #\e #\g)
+        (set #\a #\c #\d #\f #\g)
+        (set #\b #\c #\d #\f)
+        (set #\a #\b #\d #\f #\g)
+        (set #\a #\b #\d #\e #\f #\g)
+        (set #\a #\c #\f)
+        (set #\a #\b #\c #\d #\e #\f #\g)
+        (set #\a #\b #\c #\d #\f #\g)))
 
 (define (convert-letter-to-number x)
   (let ([letters "abcdefg"])
-    (- (string-length letters)
-       (length (member x (string->list letters))))))
+    (- (string-length letters) (length (member x (string->list letters))))))
 
 ;; convert the correct letters into numbers and leave letters for the wrong ones
 (define (switch-letters-to-numbers s)
@@ -103,14 +105,13 @@
 ;; "deafgbc" actually maybe "cbgfaed" is the one in the example because I
 ;; starts backwards - let's see...
 (define (mangle-digit miswiring-pattern numbered-led-set)
-  (apply set (set-map
-              numbered-led-set
-              (lambda (x) (list-ref miswiring-pattern x)))))
+  (apply set
+         (set-map numbered-led-set
+                  (lambda (x) (list-ref miswiring-pattern x)))))
 
 ;; to optimise we could just remove 8 from the array since it is always abcdefg
 (define (mangle-digits miswiring-pattern)
-  (map (curry mangle-digit miswiring-pattern)
-       renumbered-correct-digits))
+  (map (curry mangle-digit miswiring-pattern) renumbered-correct-digits))
 
 ;; mangle-digits gets you the "rewiring table" that looks like this
 ;; for now just look up the answers
@@ -140,7 +141,7 @@
 ;; and just ignore the order because we don't know the order of what we compare
 ;; it to
 (define (hash-rewiring-table rewiring-table)
-   (apply set rewiring-table))
+  (apply set rewiring-table))
 
 ;; assume that our hash is unique so if we are wrong we'll overwrite entries
 (define all-possible-answers
@@ -159,7 +160,6 @@
   (hash-rewiring-table (/> jumbled-rewiring-info
                            (curry map string->list)
                            (curry map (curry apply set)))))
-
 
 ;; unjumble by looking through the list of all possible solutions
 (define (unjumble-rewiring-info jumbled-rewiring-info)

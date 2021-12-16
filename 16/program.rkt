@@ -10,9 +10,7 @@
       (curryr list-ref 0)
       decode-buoyancy-interchange-transmission))
 
-(display (/> (current-command-line-arguments)
-             (curryr vector-ref 0)
-             (curry main)))
+(display
+ (/> (current-command-line-arguments) (curryr vector-ref 0) (curry main)))
 
 (display "\n")
-

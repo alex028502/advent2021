@@ -36,8 +36,7 @@
 (define (sort-items input [result (make-immutable-hash '())])
   (if (= 0 (length input))
       result
-      (sort-items (cdr input)
-                  (add-to-hash result (car input)))))
+      (sort-items (cdr input) (add-to-hash result (car input)))))
 
 ;; not really the size but this could have been a list
 ;; actually now we are just using "size" to turn it into a list
@@ -59,9 +58,9 @@
 (define (get-price-list-up-to n [price-list '(0)])
   (if (> (length price-list) n) ;; is it expensive to get the length twice?
       price-list
-      (get-price-list-up-to n (append price-list
-                                      (list (+ (last price-list)
-                                               (length price-list)))))))
+      (get-price-list-up-to
+       n
+       (append price-list (list (+ (last price-list) (length price-list)))))))
 
 ;; just gonna visualize for a sec..
 ;; '(16 1 2 0 4 2 7 1 2 14) - input
@@ -82,16 +81,13 @@
 (define (find-best-answer price-list frequencies [best-answer infinity])
   (if (< (length price-list) (length frequencies))
       best-answer
-      (find-best-answer (cdr price-list)
-                        frequencies
-                        (min best-answer
-                             (calculate-fuel price-list frequencies)))))
+      (find-best-answer
+       (cdr price-list)
+       frequencies
+       (min best-answer (calculate-fuel price-list frequencies)))))
 
 (define (get-best-answer frequencies price-list-function)
-  (find-best-answer (/> frequencies
-                        length
-                        price-list-function
-                        reflect-list)
+  (find-best-answer (/> frequencies length price-list-function reflect-list)
                     frequencies))
 
 (define input-file (vector-ref (current-command-line-arguments) 0))

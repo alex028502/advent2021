@@ -6,10 +6,7 @@
 ;; (define raw-input (file->lines (vector-ref (current-command-line-arguments) 0)))
 
 (define (process-file path)
-  (/> path
-      file->lines
-      (curry map string->list)
-      (curry map process-line)))
+  (/> path file->lines (curry map string->list) (curry map process-line)))
 
 ;; ): 3 points.
 ;; ]: 57 points.
@@ -21,22 +18,15 @@
 ;; for each closer you need to know the thing it is allowed to close and the
 ;; points if it is misplaced
 (define rules
-  (make-immutable-hash '((#\) . (#\( 3))
-                         (#\] . (#\[ 57))
-                         (#\} . (#\{ 1197))
-                         (#\> . (#\< 25137)))))
+  (make-immutable-hash
+   '((#\) . (#\( 3)) (#\] . (#\[ 57)) (#\} . (#\{ 1197)) (#\> . (#\< 25137)))))
 
 (define more-rules
-  (make-immutable-hash '((#\( . 1)
-                         (#\[ . 2)
-                         (#\{ . 3)
-                         (#\< . 4))))
+  (make-immutable-hash '((#\( . 1) (#\[ . 2) (#\{ . 3) (#\< . 4))))
 
 (define (autocomplete-score stack)
   (foldl (lambda (next score)
-           (/> score
-               (curry * 5)
-               (curry + (hash-ref more-rules next))))
+           (/> score (curry * 5) (curry + (hash-ref more-rules next))))
          0
          stack))
 
@@ -56,7 +46,7 @@
 ;; check this out
 ;; need to figure out how to replace lambda with eval
 (define (/> arg . ops)
- (foldl (lambda (op v) (op v)) arg ops))
+  (foldl (lambda (op v) (op v)) arg ops))
 
 ;; using negative as a secret code for the autocomplete scores
 ;; so now I need to separate them
@@ -66,15 +56,12 @@
 ;; and so it shows it as a big list with the former list as the first element
 ;; of the second list... but... just don't look at it
 (define (classify . args)
-  (foldl
-   (lambda (next scores)
-     (if (< next 0)
-         (cons (car scores)
-               (cons next (cdr scores)))
-         (cons (cons next (car scores))
-               (cdr scores))))
-   '(() . ())
-   args))
+  (foldl (lambda (next scores)
+           (if (< next 0)
+               (cons (car scores) (cons next (cdr scores)))
+               (cons (cons next (car scores)) (cdr scores))))
+         '(() . ())
+         args))
 
 ;; ---
 

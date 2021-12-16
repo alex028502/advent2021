@@ -2,7 +2,8 @@
 
 (require racket/cmdline)
 
-(define window-size (string->number (vector-ref (current-command-line-arguments) 0)))
+(define window-size
+  (string->number (vector-ref (current-command-line-arguments) 0)))
 (define input-file-path (vector-ref (current-command-line-arguments) 1))
 
 (define raw-input (file->lines input-file-path))

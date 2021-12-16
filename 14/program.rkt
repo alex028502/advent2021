@@ -3,7 +3,7 @@
 (require racket/cmdline)
 
 (define (/> . args)
-   ((apply compose (reverse (cdr args))) (car args)))
+  ((apply compose (reverse (cdr args))) (car args)))
 
 ;; this function starts and ends where I can test the four examples in the
 ;; explanation - add the stuff that adds up the answer is separate
@@ -13,18 +13,15 @@
   (/> path
       file->lines
       parse-lines
-      (curry apply (λ (template rules)
-                     (foldl (λ (_ acc)
-                              (operate rules acc))
-                            template
-                            (range (string->number n)))))))
-
+      (curry apply
+             (λ (template rules)
+               (foldl (λ (_ acc) (operate rules acc))
+                      template
+                      (range (string->number n)))))))
 
 (define (operate rules template)
-  (string-upcase (foldl (λ (rule t)
-                          (apply string-full-replace t rule))
-                        template
-                        rules)))
+  (string-upcase
+   (foldl (λ (rule t) (apply string-full-replace t rule)) template rules)))
 
 ; even if we use "all" we still get this
 ;; > (string-replace "AAAA" "AA" "A1A" #:all? #t)
@@ -41,10 +38,9 @@
             (curry filter (curryr string-contains? "->"))
             (curry map parse-rule)
             (curry map format-rule))))
-            ;; (curry map (λ (rule)
-            ;;              (list rule (reverse-rule rule))))
-            ;; (curry apply append))
-
+;; (curry map (λ (rule)
+;;              (list rule (reverse-rule rule))))
+;; (curry apply append))
 
 (define (parse-rule line)
   (/> line
@@ -56,12 +52,10 @@
 ;; '("AB" "AcB")
 (define (format-rule raw-rule)
   (list (car raw-rule)
-        (list->string (list (string-ref (car raw-rule) 0)
-                            (/> raw-rule
-                                last
-                                string-downcase
-                                (curryr string-ref 0))
-                            (string-ref (car raw-rule) 1)))))
+        (list->string
+         (list (string-ref (car raw-rule) 0)
+               (/> raw-rule last string-downcase (curryr string-ref 0))
+               (string-ref (car raw-rule) 1)))))
 
 ;; OK it turns out adjacent means in the same order
 ;; I thought te NC rule would apply to CN
@@ -73,22 +67,17 @@
 ;;              list->string))
 ;;        rule))
 
-
 (define (most-and-least lst [result #f])
   (if result
       (if (= 0 (length lst))
           (let ([freqs (sort (hash-values result) <)])
-            (list (last freqs)
-                  (car freqs)))
+            (list (last freqs) (car freqs)))
           (if (hash-has-key? result (car lst))
-              (most-and-least (cdr lst)
-                              (hash-update result (car lst) add1))
+              (most-and-least (cdr lst) (hash-update result (car lst) add1))
               (most-and-least lst ; I could save a step by setting to 1
                               (hash-set result (car lst) 0))))
       ;; don't want to call a function in the default - no good reason
       (most-and-least lst (make-immutable-hash))))
-
-
 
 ;; ---------------
 
@@ -101,4 +90,3 @@
              (curry apply -)))
 
 (display "\n")
-

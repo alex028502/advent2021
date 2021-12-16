@@ -8,11 +8,10 @@
 (provide construct-sample-message)
 
 (define (/> . args)
-   ((apply compose (reverse (cdr args))) (car args)))
+  ((apply compose (reverse (cdr args))) (car args)))
 
 (define (decode-buoyancy-interchange-transmission str)
-  (string-append "processing: "
-                 (construct-sample-message str)))
+  (string-append "processing: " (construct-sample-message str)))
 
 (define (construct-sample-message str)
   (string-append "sample " str))

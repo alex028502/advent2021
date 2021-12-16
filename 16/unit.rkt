@@ -6,7 +6,6 @@
 
 (check-equal? (construct-sample-message "X") "sample X")
 
-
 ;; real tests are:
 ;; 8A004A801A8002F478 16
 ;; 620080001611562C8802118E34 12

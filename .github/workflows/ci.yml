@@ -21,14 +21,18 @@ jobs:
       run: racket --version
     - name: list raco packages in case something is missing
       run: raco pkg show --all
+    - name: install racket formatter fmt
+      run: rack pkg install fmt
+    - name: list raco packages again
+      run: raco pkg show --all
     - name: Install testing stuff
       run: python -m venv venv && venv/bin/pip install -r requirements.txt
     - name: Tests
       run: venv/bin/pytest -vv
     - name: Unit Tests - day 16
       run: raco test 16/unit.rkt
-    - name: Format Tests
-      run: venv/bin/black . --check
+    - name: Format Check
+      run: ./format-check.sh
     - name: practice round (day 1 from 2020)
       run: racket 00/original.rkt 00/data.txt
     - name: practice round (second attempt)
