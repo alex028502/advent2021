@@ -530,6 +530,32 @@ def test_15(data_dir, sut_dir, tmp_path, language):
     )
     assert truncated_output == "39"
 
+    # change "square1" to 9 and prove that it doesn't change the answer
+    square1_input_file_path = "%s/square1.txt" % tmp_path
+    with open(input_file_path, "r") as original_f:
+        with open(square1_input_file_path, "w") as modified_f:
+            original_content = original_f.read()
+            modified_content = "9" + original_content[1:]
+            assert len(original_content) == len(modified_content)
+            modified_f.write(modified_content)
+
+    diff_p = subprocess.Popen(
+        [
+            "diff",
+            square1_input_file_path,
+            input_file_path,
+        ],
+    )
+    diff_p.communicate()
+    assert diff_p.returncode == 1, "2 means error; 1 means different"
+
+    square1_output = get_output_from(
+        language,
+        program,
+        square1_input_file_path,
+    )
+    assert square1_output == "40"
+
 
 # it could be something like this
 
