@@ -5,22 +5,20 @@
 ;; this program can take like five minutes on the real data set on my little
 ;; computer, but can be run on github actions to speed it up
 
-
 ;; messing around with "threading" here
 ;; except instead of a macro, just using a function that takes lambdas as
 ;; arguments, but then made a function to make the lambdas a little shorter
 ;; but that doesn't matter because it still doesn't fit on one line
 ;; so could have just left it as lambda
-(define-syntax-rule (fn (x) y)
-  (lambda (x) y))
+(define-syntax-rule (fn (x) y) (lambda (x) y))
 
 (define (/> . args)
-;;   (let ([value (car args)]
-;;         [functions (cdr args)])
-;;     (if (= 0 (length functions))
-;;         value
-;;         (apply /> (cons ((car functions) value) (cdr functions))))))
-   ((apply compose (reverse (cdr args))) (car args)))
+  ;;   (let ([value (car args)]
+  ;;         [functions (cdr args)])
+  ;;     (if (= 0 (length functions))
+  ;;         value
+  ;;         (apply /> (cons ((car functions) value) (cdr functions))))))
+  ((apply compose (reverse (cdr args))) (car args)))
 
 (define (parse-move str)
   (/> str
@@ -63,16 +61,13 @@
 (define (queen-recursive direction destination path)
   (if (equal? (car path) destination)
       path
-      (queen-recursive direction
-            destination
-            (cons (map (lambda (x) (apply + x))
-                       (zip2 (car path) direction))
-                  path))))
+      (queen-recursive
+       direction
+       destination
+       (cons (map (lambda (x) (apply + x)) (zip2 (car path) direction)) path))))
 
 (define (queen corner1 corner2)
-    (queen-recursive (travel-direction corner1 corner2)
-                      corner2
-                      (list corner1)))
+  (queen-recursive (travel-direction corner1 corner2) corner2 (list corner1)))
 
 (define (expand move)
   (apply queen move))
@@ -85,8 +80,7 @@
 (define (find-repeats input [result (make-immutable-hash '())])
   (if (= 0 (length input))
       result
-      (find-repeats (cdr input)
-                    (add-to-hash result (car input)))))
+      (find-repeats (cdr input) (add-to-hash result (car input)))))
 
 (define (count-repeats input)
   (/> input
@@ -96,7 +90,8 @@
       length))
 
 (define (evaluate-file path)
-  (/> path read-data-file
+  (/> path
+      read-data-file
       (fn (x) (map expand x))
       (fn (x) (apply append x))
       count-repeats))

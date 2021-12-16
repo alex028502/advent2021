@@ -3,9 +3,7 @@
 (require racket/cmdline)
 
 (define (main path)
-  (/> path
-      parse-file
-      (curry apply do-every-fold)))
+  (/> path parse-file (curry apply do-every-fold)))
 
 (define (parse-file path)
   (/> path
@@ -34,33 +32,25 @@
       last
       (curryr string-split "=")
       (curry apply
-             (lambda (k v)
-               (list (index-of '("x" "y") k) (string->number v))))))
+             (lambda (k v) (list (index-of '("x" "y") k) (string->number v))))))
 
 (define (parse-dot line)
-  (/> line
-      (curryr string-split ",")
-      (curry map string->number)))
-
+  (/> line (curryr string-split ",") (curry map string->number)))
 
 (define (do-every-fold dots folds [population-log '()])
   (if (> (length folds) 0)
       (do-every-fold (fold-list dots (car folds))
                      (cdr folds)
                      (cons (length dots) population-log))
-      (list dots
-            (reverse population-log)))) ; no final count in log
+      (list dots (reverse population-log)))) ; no final count in log
 
 (define (fold-list dots fold)
-  (/> dots
-      (curry map (apply curry (cons fold-point fold)))
-      remove-duplicates))
+  (/> dots (curry map (apply curry (cons fold-point fold))) remove-duplicates))
 
 ;; I wonder if the trick is that the "first fold" in the example is y but it
 ;; doesn't have to be
 (define (fold-point dimension fold-on point)
-  (list-set point dimension (fold-number fold-on
-                                         (list-ref point dimension))))
+  (list-set point dimension (fold-number fold-on (list-ref point dimension))))
 
 ;; so 10 folded on 8 should be 6?
 ;; 9 -> 7
@@ -74,7 +64,6 @@
 (define (fold-number fold-on value)
   (- fold-on (abs (- value fold-on))))
 
-
 ;; I keep writing this function and then not needing it so leaving it here to
 ;; copy the next time
 ;; like filter except keeps the discarded ones in another list
@@ -86,13 +75,9 @@
 ;;           (classify pred (cdr list) (cons (car list) wheat) chaff)
 ;;           (classify pred (cdr list) wheat (cons (car list) chaff)))))
 
-
 (define (picture dots)
-  (/> (foldl (lambda (dot acc)
-               (apply grid-set acc dot))
-             (apply make-grid (/> dots
-                                  (curry apply map max)
-                                  (curry map add1)))
+  (/> (foldl (lambda (dot acc) (apply grid-set acc dot))
+             (apply make-grid (/> dots (curry apply map max) (curry map add1)))
              dots)
       (curry map (curryr string-join ""))
       (curryr string-join "\n")))
@@ -111,7 +96,6 @@
 (define (make-grid w h)
   (make-list h (make-list w ".")))
 
-
 ;; can only set it to one thing
 (define (grid-set grid x y)
   (list-set grid y (list-set (list-ref grid y) x "#")))
@@ -119,7 +103,7 @@
 ;; maybe I need to extract this into a require
 ;; since it has turned out really useful
 (define (/> . args)
-   ((apply compose (reverse (cdr args))) (car args)))
+  ((apply compose (reverse (cdr args))) (car args)))
 
 (define (add-arrow-to-second first . others)
   (cons first (cons (string-append (car others) "<-") others)))
@@ -127,14 +111,14 @@
 (/> (current-command-line-arguments)
     (curryr vector-ref 0)
     main
-    (curry apply (lambda (dots population-log)
-                   (begin
-                     (/> population-log
-                         (curry map number->string)
-                         (curry apply add-arrow-to-second)
-                         (curryr string-join "\n")
-                         (curryr display (current-error-port)))
-                     (display "\n" (current-error-port))
-                     (display (picture dots))
-                     (display "\n")))))
-
+    (curry apply
+           (lambda (dots population-log)
+             (begin
+               (/> population-log
+                   (curry map number->string)
+                   (curry apply add-arrow-to-second)
+                   (curryr string-join "\n")
+                   (curryr display (current-error-port)))
+               (display "\n" (current-error-port))
+               (display (picture dots))
+               (display "\n")))))

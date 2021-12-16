@@ -26,8 +26,7 @@
   (if (= 0 (length new-items))
       output
       (classify (cdr new-items)
-                (list-add output
-                          (convert-number-to-list (car new-items))))))
+                (list-add output (convert-number-to-list (car new-items))))))
 
 (define (parse-input str)
   (classify (map string->number (string-split str ","))))
@@ -39,18 +38,16 @@
             (convert-number-to-list 8 (car ages))))
 
 (define (add-days-to-data ages days)
-  (if (= days 0)
-      ages
-      (add-days-to-data (add-day-to-data ages) (- days 1))))
+  (if (= days 0) ages (add-days-to-data (add-day-to-data ages) (- days 1))))
 
 (define (do-calculation timespan-str ages-str)
-  (apply + (add-days-to-data (parse-input ages-str)
-                             (string->number timespan-str))))
+  (apply +
+         (add-days-to-data (parse-input ages-str)
+                           (string->number timespan-str))))
 
 (define input-timespan (vector-ref (current-command-line-arguments) 0))
 (define input-file (vector-ref (current-command-line-arguments) 1))
 
-(display (do-calculation input-timespan
-                         (first (file->lines input-file))))
+(display (do-calculation input-timespan (first (file->lines input-file))))
 
 (display "\n")

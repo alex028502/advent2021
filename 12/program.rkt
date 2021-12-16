@@ -14,14 +14,10 @@
 
 ;; is edge the right word?
 (define (make-edge-hash edges)
-  (foldl add-edge-to-hash-reducer-style
-         (make-immutable-hash)
-         edges))
+  (foldl add-edge-to-hash-reducer-style (make-immutable-hash) edges))
 
 (define (add-edge-to-hash-reducer-style edge hash)
-  (add-edge-to-hash hash
-                    (car edge)
-                    (last edge)))
+  (add-edge-to-hash hash (car edge) (last edge)))
 
 ;; filter out start edges that lead to start for two reasons
 ;; in part i we don't need them since we'll never go back
@@ -33,20 +29,17 @@
       hash
       (if (hash-has-key? hash start)
           (hash-update hash start (curry cons end))
-          (add-edge-to-hash (hash-set hash start '())
-                            start
-                            end))))
+          (add-edge-to-hash (hash-set hash start '()) start end))))
 
 ;; I'm just adding every possible route to the array twice
 (define (double-edge edge)
   (list edge (reverse edge)))
 
 (define (find-solutions part options-table)
-  (find-solutions:> (if (equal? part "ii")
-                        complicated-option-check
-                        simple-option-check)
-                    options-table
-                    '("start")))
+  (find-solutions:>
+   (if (equal? part "ii") complicated-option-check simple-option-check)
+   options-table
+   '("start")))
 
 ;; didn't know what to call this so just gave it the same name as the wrapper
 ;; with a smile at the end - I think I would usually at an underscore to the
@@ -57,23 +50,22 @@
       (let ([options (hash-ref options-table (car trail))])
         (/> options
             (curry filter (curry option-check trail))
-            (curry map (lambda (option)
-                         (find-solutions:> option-check
-                                           options-table
-                                           (cons option trail))))
+            (curry map
+                   (lambda (option)
+                     (find-solutions:> option-check
+                                       options-table
+                                       (cons option trail))))
             (curry apply append)))))
 
 (define (simple-option-check trail option)
-  (or (is-upper-case option)
-      (not (member option trail))))
+  (or (is-upper-case option) (not (member option trail))))
 
 ;; this does not check if the destination is start because those edges are
 ;; already filtered out
 (define (complicated-option-check trail option)
   (or (simple-option-check trail option)
       (/> trail
-          (curry filter (lambda (x)
-                          (not (is-upper-case x))))
+          (curry filter (lambda (x) (not (is-upper-case x))))
           check-duplicates
           not)))
 
@@ -85,17 +77,14 @@
 
 ; I still can't think of a cooler way to do this so copied this one
 (define (/> . args)
-   ((apply compose (reverse (cdr args))) (car args)))
+  ((apply compose (reverse (cdr args))) (car args)))
 
 ;; ---------------
 
 ;; this turned a bit messy!
 (display (/> (current-command-line-arguments)
-             (lambda (x) (list
-                          (vector-ref x 0)
-                          (parse-file (vector-ref x 1))))
+             (lambda (x) (list (vector-ref x 0) (parse-file (vector-ref x 1))))
              (curry apply find-solutions)
              length))
 
 (display "\n")
-
