@@ -574,3 +574,16 @@ def test_15_part_ii(data_dir, sut_dir):
         "--5x5",
     )
     assert output == "315"
+
+
+# this is only one sample of 4 - most samples are covered by unit tests
+def test_16(data_dir, sut_dir):
+    input_file_path = "%s/16.txt" % data_dir
+
+    output = get_output(
+        "%s/16/program.rkt" % sut_dir,
+        input_file_path,
+    )
+
+    # program doesn't do anything yet; just getting ready
+    assert "A0016" in output  # real answer is 31

@@ -25,6 +25,8 @@ jobs:
       run: python -m venv venv && venv/bin/pip install -r requirements.txt
     - name: Tests
       run: venv/bin/pytest -vv
+    - name: Unit Tests - day 16
+      run: raco test 16/unit.rkt
     - name: Format Tests
       run: venv/bin/black . --check
     - name: practice round (day 1 from 2020)
