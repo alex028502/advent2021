@@ -530,8 +530,8 @@ def test_15(data_dir, sut_dir, tmp_path, language):
     )
     assert truncated_output == "39"
 
-    # it could be something like this
 
+# it could be something like this
 
 special_cases_15 = [
     [
