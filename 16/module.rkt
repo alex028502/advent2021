@@ -14,10 +14,7 @@
 ;; only work with binary strings
 ;; even to find the end of the literal package later, I'll just count in fours
 (define (parse-bits str)
-  (/> str
-      (curryr string->number 16)
-      (curryr number->string 2)
-      next))
+  (/> str (curryr string->number 16) (curryr number->string 2) next))
 
 ;; I am using a binary string - If this had to run all day every day and scale
 ;; to millions of users, I guess I would change it to shift bits the end
@@ -39,90 +36,53 @@
   (let ([version (substring transmission 0 3)]
         [operation (substring transmission 3 6)]
         [content (substring transmission 6)])
-    (cond [(equal? operation "100")
-           (let ([value (literal-packet-value transmission)])
-             (list (list version operation value)
-                   (substring transmission
-                              (ceiling4 (literal-packet-length value)))))]
-          [(= (operator-len-str-len transmission) subpacket-bit-count-len)
-           (let ([subpacket-bit-count (/> content
-                                          skip1
-                                          (curryr substring
-                                                  0
-                                                  subpacket-bit-count-len)
-                                          (curryr string->number 2))]
-                 [body+ (/> transmission
-                            content
-                            skip1
-                            (curryr substring subpacket-bit-count-len))])
-             (list (list version
-                         operation
-                         (/> body+
-                             (curryr substring 0 subpacket-bit-count)
-                             get-all-subpackets-in))
-                   (substring body+ subpacket-bit-count)))]
-          [else (let* ([subpacket-count (/> transmission
-                                           content
-                                           skip1
-                                    (curryr substring 0 subpacket-count-len)
-                                    (curryr string->number 2))]
-                 [body+ (/> transmission
-                            content
-                            skip1
-                            (curryr substring subpacket-count-len))]
-                 [tmp (take-subpackets body+ subpacket-count)]
-                 [subpackets (car tmp)]
-                 [leftovers (last tmp)])
-                  (list (list version
-                              operation
-                              subpackets) ; couldn't think of a name for var
-                        leftovers))])))
-                         
+    (cond
+      [(equal? operation "100")
+       (let ([value (literal-packet-value transmission)])
+         (list (list version operation value)
+               (substring transmission
+                          (ceiling4 (literal-packet-length value)))))]
+      [(= (operator-len-str-len transmission) subpacket-bit-count-len)
+       (let ([subpacket-bit-count
+              (/> content
+                  skip1
+                  (curryr substring 0 subpacket-bit-count-len)
+                  (curryr string->number 2))]
+             [body+ (/> transmission
+                        content
+                        skip1
+                        (curryr substring subpacket-bit-count-len))])
+         (list (list version
+                     operation
+                     (/> body+
+                         (curryr substring 0 subpacket-bit-count)
+                         get-all-subpackets-in))
+               (substring body+ subpacket-bit-count)))]
+      [else
+       (let* ([subpacket-count (/> transmission
+                                   content
+                                   skip1
+                                   (curryr substring 0 subpacket-count-len)
+                                   (curryr string->number 2))]
+              [body+ (/> transmission
+                         content
+                         skip1
+                         (curryr substring subpacket-count-len))]
+              [tmp (take-subpackets body+ subpacket-count)]
+              [subpackets (car tmp)]
+              [leftovers (last tmp)])
+         (list
+          (list version operation subpackets) ; couldn't think of a name for var
+          leftovers))])))
 
 (define (get-all-subpackets-in body)
   '())
 
-
 (define (take-subpackets body+)
   '())
 
-
 (define (skip1 str)
-  (substring str 1))                 
-               
-|#
-(define (next transmission)
-  (let ([v (version transmission)]
-        [content (subtring transmission 6)])
-    (cond [(is-literal transmission)]
-          (/> transmission
-              decode-literal-packet
-              (curryr number->string 16)
-              string-length
-              (curry * 5) ;; undo everything I just did
-              (curry + 6) ;; instead of just calculting it in the first place
-              (curryr / 4) ;; because I already made the function and have a
-              ceiling ;; test for it from the question
-              (curry * 4)
-              (curry substring transmission)
-              (curry list v))
-          [(= (substring (content transmission) 0 1) "0")]
-          (let ([l (/> transmission
-                       content
-                       (curryr subtring 1)
-                       (curryr subtring 0 15)
-                       (curryr string->number 2))])
-            (list 10
-                 (substring (content transmission)
-                            (+ l 1)))
-#|
-
-      
-
-        ;;   (/> transmission
-        ;;       (curryr substring 6) ; have already dealt with header
-        ;;       (curryr substring 1)
-        ;;       (curryr substring )))))
+  (substring str 1))
 
 (define (operator-len-str-len transmission)
   (if (equal? (substring transmission 6 7) "0")
