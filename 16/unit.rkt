@@ -11,6 +11,14 @@
 (check-equal? (parse-bits-transmission "EE00D40C823060")
               '(b#111 "011" (b#010 "100" 1) (b#100 "100" 2) (b#001 "100" 3)))
 
+
+; from example
+(define packet2021 "110100101111111000101000")
+
+(check-equal? (parse-bits-transmission packet2021)
+              '(b#110 "100" 2021))
+
+#|
 ;; detailed example except I had to get the version bits out of the example
 ;; string
 (check-equal? (bites-packet-version-total "EE00D40C823060")
@@ -23,23 +31,21 @@
 (check-equal? (bites-packet-version-total "C0015000016115A2E0802F182340") 23)
 
 (check-equal? (bites-packet-version-total "A0016C880162017C3686B18A3D4780") 31)
+|#
 
-; from example
-(define packet2021 "110100101111111000101000")
 
-;; I don't know if we actually need this for this stage
-(check-equal? (decode-literal-packet packet2021) 2021)
 
-;; oh except we do need it for this stage, except with a bunch of stuff at the
-;; end - and we are gonna use the value to cut it off
-(check-equal?
- (decode-literal-packet (string-append packet2021 "01010101000011111"))
- 2021)
 
-; and this is the function that uses the above function in a roundabout way
-(let ([rest-of-transmission "101011100010101"])
-  (check-equal? (next (string-append packet2021 rest-of-transmission))
-                (list 6 rest-of-transmission)))
+(check-equal? (literal-packet-value packet2021) 2021)
+
+;; (check-equal?
+;;  (decode-literal-packet (string-append packet2021 "01010101000011111"))
+;;  2021)
+
+;; ; and this is the function that uses the above function in a roundabout way
+;; (let ([rest-of-transmission "101011100010101"])
+;;   (check-equal? (next (string-append packet2021 rest-of-transmission))
+;;                 (list 6 rest-of-transmission)))
 
 ;; (let ([rest-of-transmission "101011100010101"]
 ;;       [sample "00111000000000000110111101000101001010010001001000000000"])
