@@ -57,10 +57,5 @@
                   take-literal-packet)
               '(2021 ""))
 
-;; (let ([rest-of-transmission "101011100010101"])
-;;   (check-equal? (take-literal-packet
-;;                  (packet-content (string-append packet2021-bin rest-of-transmission)))
-;;                 (list 2021 rest-of-transmission)))
-
 ;; from inside one of the examples
 (check-equal? (take-literal-packet (packet-content "11010001010")) '(10 ""))
