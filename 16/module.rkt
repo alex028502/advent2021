@@ -21,7 +21,7 @@
 ;; about yet) then I could just implement a drop in replacement for substring
 
 (define (next transmission)
-  (let ([version (substring transmission 0 3)]
+  (let ([version (string->number (substring transmission 0 3) 2)]
         [operation (substring transmission 3 6)]
         [content (substring transmission 6)])
     (cond

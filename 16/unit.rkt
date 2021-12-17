@@ -6,17 +6,21 @@
 (require "./literal.rkt")
 
 (check-equal? (parse-bits-transmission "38006F45291200")
-              '(#b1 "110" (b#110 "100" 10) (#b101 "100" 20)))
+              '(#b1 "110" (#b110 "100" 10) (#b101 "100" 20)))
 
 (check-equal? (parse-bits-transmission "EE00D40C823060")
-              '(b#111 "011" (b#010 "100" 1) (b#100 "100" 2) (b#001 "100" 3)))
+              '(#b111 "011" (#b010 "100" 1) (#b100 "100" 2) (#b001 "100" 3)))
 
 
 ; from example
-(define packet2021 "110100101111111000101000")
+(define packet2021-bin "110100101111111000101000")
+(define packet2021-hex "D2FE28")
 
-(check-equal? (parse-bits-transmission packet2021)
-              '(b#110 "100" 2021))
+(check-equal? (string->number packet2021-hex 16)
+              (string->number packet2021-bin 2))
+
+(check-equal? (parse-bits-transmission packet2021-hex)
+              '(#b110 "100" 2021))
 
 #|
 ;; detailed example except I had to get the version bits out of the example
@@ -36,7 +40,7 @@
 
 
 
-(check-equal? (literal-packet-value packet2021) 2021)
+(check-equal? (literal-packet-value packet2021-bin) 2021)
 
 ;; (check-equal?
 ;;  (decode-literal-packet (string-append packet2021 "01010101000011111"))
