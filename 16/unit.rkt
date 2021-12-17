@@ -31,10 +31,8 @@
 
 ; and this is the function that uses the above function in a roundabout way
 (let ([rest-of-transmission "101011100010101"])
-  (check-equal? (next-header (string-append packet2021 rest-of-transmission))
-                rest-of-transmission))
-
-(check-equal? (version packet2021) 6)
+  (check-equal? (next (string-append packet2021 rest-of-transmission))
+                (list 6 rest-of-transmission)))
 
 ;; (let ([rest-of-transmission "101011100010101"]
 ;;       [sample "00111000000000000110111101000101001010010001001000000000"])

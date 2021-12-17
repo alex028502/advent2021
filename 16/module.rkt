@@ -6,8 +6,7 @@
 
 ;; provided only for unit testing
 (provide decode-literal-packet)
-(provide next-header)
-(provide version)
+(provide next)
 
 (define (/> . args)
   ((apply compose (reverse (cdr args))) (car args)))
@@ -28,7 +27,7 @@
 (define (binary-bites-packet-version-total transmission [acc 0])
   (if (< (string-length transmission) 6)
       acc
-      (binary-bites-packet-version-total (next-header transmission)
+      (binary-bites-packet-version-total (next transmission)
                                          (+ acc (version transmission)))))
 
 ;; wait a minute! - what's the difference between "the rest of the
@@ -39,28 +38,40 @@
 ;; at least six digits left maybe?
 
 ;; gives a value and the remainder of the transmission
-(define (next-header transmission)
-  (if (is-literal transmission)
-      (/> transmission
-          decode-literal-packet
-          (curryr number->string 16)
-          string-length
-          (curry * 5) ;; undo everything I just did
-          (curry + 6) ;; instead of just calculting it in the first place
-          (curryr / 4) ;; because I already made the function and have a good
-          ceiling ;; test for it from the question
-          (curry * 4)
-          (curry substring transmission))
-      (/> transmission
-          (curryr substring 6) ; we deal with this somewhere else
-          (curryr substring 1)
-          (curryr substring (operator-len-str-len transmission)))))
+(define (next transmission)
+  (let ([v (version transmission)]
+        [content (subtring transmission 6)])
+    (cond [(is-literal transmission)]
+          (/> transmission
+              decode-literal-packet
+              (curryr number->string 16)
+              string-length
+              (curry * 5) ;; undo everything I just did
+              (curry + 6) ;; instead of just calculting it in the first place
+              (curryr / 4) ;; because I already made the function and have a
+              ceiling ;; test for it from the question
+              (curry * 4)
+              (curry substring transmission)
+              (curry list v))
+        (if (= "0" (/> transmission
+                           content
+                           (curryr substring 0 1)))
+                (get-packets-from-next-16-bits)
+          (if (= l 11)
+
+        ;;   (/> transmission
+        ;;       (curryr substring 6) ; have already dealt with header
+        ;;       (curryr substring 1)
+        ;;       (curryr substring )))))
 
 (define (operator-len-str-len transmission)
   (if (equal? (substring transmission 6 7) "0") 15 11))
 
 (define (version packet)
   (/> packet (curryr substring 0 3) (curryr string->number 2)))
+
+(define (content packet)
+  (substring packet 6))
 
 ;; in the question, 'subpacket' has a hyphen in it, but I need hyphens to
 ;; separate it from other words
