@@ -12,25 +12,13 @@
 (define subpacket-count-len 11)
 
 ;; only work with binary strings
-;; even to find the end of the literal package later, I'll just count in fours
-(define (parse-bits str)
-  (/> str (curryr string->number 16) (curryr number->string 2) next))
+(define (parse-bits-transmission str)
+  (/> str (curryr string->number 16) (curryr number->string 2) next car))
 
 ;; I am using a binary string - If this had to run all day every day and scale
 ;; to millions of users, I guess I would change it to shift bits the end
 ;; (or I mind find out that I have to do it now for a reason that I don't know
 ;; about yet) then I could just implement a drop in replacement for substring
-
-;; wait a minute! - what's the difference between "the rest of the
-;; transmission" and "subpackets"? - maybe I can take a shortcut
-;; or maybe by trying to take the shortcut, I'll understand better
-;; because no matter what happens, after the length string, there is another
-;; packet - or is there extra stuff at the end? I'll just look if there are
-;; at least six digits left maybe?
-
-;; gives a value and the remainder of the transmission
-
-;; returns the "version total" of the next packet, and any leftovers
 
 (define (next transmission)
   (let ([version (substring transmission 0 3)]
@@ -67,19 +55,22 @@
               [body+ (/> transmission
                          content
                          skip1
-                         (curryr substring subpacket-count-len))]
-              [tmp (take-subpackets body+ subpacket-count)]
-              [subpackets (car tmp)]
-              [leftovers (last tmp)])
-         (list
-          (list version operation subpackets) ; couldn't think of a name for var
-          leftovers))])))
+                         (curryr substring subpacket-count-len))])
+         (let-values ([(subpackets leftovers) (take-subpackets body+ subpacket-count)])
+           (list (list version operation subpackets) leftovers)))])))
 
-(define (get-all-subpackets-in body)
-  '())
+(define (get-all-subpackets-in body [result '()])
+  (if (= (string-length body) 0)
+      result
+      (let-values ([(subpacket leftovers) (next body)])
+        (get-all-subpackets-in leftovers (cons subpacket result)))))
 
-(define (take-subpackets body+)
-  '())
+
+(define (take-subpackets body+ n [result '()])
+  (if (= n 0)
+      (list result body+)
+      (let-values ([(subpacket leftovers) (next body+)])
+        (take-subpackets leftovers (- n 1) (cons subpacket result)))))
 
 (define (skip1 str)
   (substring str 1))
