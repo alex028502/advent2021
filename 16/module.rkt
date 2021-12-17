@@ -12,9 +12,7 @@
   (eval (parse-bits-transmission evaluator transmission) ns))
 
 (define (evaluator version operation . body)
-  (if (equal? operation "100")
-      version
-      (apply + version body)))
+  (if (equal? operation "100") version (apply + version body)))
 
 ;; these are kind of dual purpose
 ;; it works as an enum to be able to follow what the code means
@@ -55,12 +53,13 @@
                   (curryr string->number 2))]
              [body+
               (/> content skip1 (curryr substring subpacket-bit-count-len))])
-         (list (apply list fn
-                     version
-                     operation
-                     (/> body+
-                         (curryr substring 0 subpacket-bit-count)
-                         (curry get-all-subpackets-in fn)))
+         (list (apply list
+                      fn
+                      version
+                      operation
+                      (/> body+
+                          (curryr substring 0 subpacket-bit-count)
+                          (curry get-all-subpackets-in fn)))
                (substring body+ subpacket-bit-count)))]
       [else
        (let* ([subpacket-count (/> content

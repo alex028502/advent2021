@@ -11,11 +11,16 @@
 
 ;; the program injects a function into the start of the list but here to test
 ;; I am just injecting a string
-(check-equal? (parse-bits-transmission "TEST" "38006F45291200")
-              '("TEST" #b1 "110" ("TEST" #b110 "100" 10) ("TEST" #b010 "100" 20)))
+(check-equal?
+ (parse-bits-transmission "TEST" "38006F45291200")
+ '("TEST" #b1 "110" ("TEST" #b110 "100" 10) ("TEST" #b010 "100" 20)))
 
 (check-equal? (parse-bits-transmission "TEST" "EE00D40C823060")
-              '("TEST" #b111 "011" ("TEST" #b010 "100" 1) ("TEST" #b100 "100" 2) ("TEST" #b001 "100" 3)))
+              '("TEST" #b111
+                       "011"
+                       ("TEST" #b010 "100" 1)
+                       ("TEST" #b100 "100" 2)
+                       ("TEST" #b001 "100" 3)))
 
 ; from example
 (define packet2021-bin "110100101111111000101000")
@@ -24,8 +29,8 @@
 (check-equal? (string->number packet2021-hex 16)
               (string->number packet2021-bin 2))
 
-(check-equal? (parse-bits-transmission "TEST" packet2021-hex) '("TEST" #b110 "100" 2021))
-
+(check-equal? (parse-bits-transmission "TEST" packet2021-hex)
+              '("TEST" #b110 "100" 2021))
 
 ;; detailed example except I had to get the version bits out of the example
 ;; string
@@ -40,10 +45,8 @@
 
 (check-equal? (bits-packet-version-total "A0016C880162017C3686B18A3D4780") 31)
 
-
-
-
-(check-equal? (take-literal-packet (packet-content packet2021-bin)) '(2021 "000"))
+(check-equal? (take-literal-packet (packet-content packet2021-bin))
+              '(2021 "000"))
 
 ;; get rid of the last three digits to make sure it can handle nothing after
 (check-equal? (/> packet2021-bin
@@ -58,7 +61,6 @@
 ;;   (check-equal? (take-literal-packet
 ;;                  (packet-content (string-append packet2021-bin rest-of-transmission)))
 ;;                 (list 2021 rest-of-transmission)))
-
 
 ;; from inside one of the examples
 (check-equal? (take-literal-packet (packet-content "11010001010")) '(10 ""))

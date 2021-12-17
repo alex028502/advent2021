@@ -24,4 +24,3 @@
 ;; anything that starts with decode - the packet header is included even though
 ;; we already know what it is and that's why we are using the function
 ;; (define (decode-length-type-0 str)
-
