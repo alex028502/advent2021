@@ -3,6 +3,7 @@
 (require rackunit)
 
 (require "module.rkt")
+(require "literal.rkt")
 
 ;; detailed example except I had to get the version bits out of the example
 ;; string

@@ -1,12 +1,9 @@
 #lang racket
 
-;; provided to main module
-(provide />)
-(provide bites-packet-version-total)
+(require "./lib.rkt")
+(require "./literal.rkt")
 
-;; provided only for unit testing
-(provide decode-literal-packet)
-(provide next)
+(provide bites-packet-version-total)
 
 (define (/> . args)
   ((apply compose (reverse (cdr args))) (car args)))
@@ -38,6 +35,7 @@
 ;; at least six digits left maybe?
 
 ;; gives a value and the remainder of the transmission
+
 (define (next transmission)
   (let ([v (version transmission)]
         [content (subtring transmission 6)])
@@ -53,11 +51,25 @@
               (curry * 4)
               (curry substring transmission)
               (curry list v))
-        (if (= "0" (/> transmission
-                           content
-                           (curryr substring 0 1)))
-                (get-packets-from-next-16-bits)
-          (if (= l 11)
+          [(= (substring (content transmission) 0 1) "0")]
+          (let ([l (/> transmission
+                       content
+                       (curryr subtring 1)
+                       (curryr subtring 0 15)
+                       (curryr string->number 2))])
+            (list 10
+                 (substring (content transmission)
+                            (+ l 1)))
+
+;; I don't know if I need this all the time or just for literals
+;; it would be strange if operator expressions were able to go out of phase
+;; with the hex digits but literals weren't
+(define (fit-length-into-hex len)
+  (/> len
+      (curryr / 4)
+      ceiling
+      (curry * 4)))
+      
 
         ;;   (/> transmission
         ;;       (curryr substring 6) ; have already dealt with header
@@ -73,44 +85,6 @@
 (define (content packet)
   (substring packet 6))
 
-;; in the question, 'subpacket' has a hyphen in it, but I need hyphens to
-;; separate it from other words
-;; (define (number-of-subpackets packet)
-;;   (/> (substring packet 6 7)
-;;       (
-
-;; (define (get-subpackets packet [subpackets])
-;;   (if (is-literal)
 
 (define (is-literal packet)
   (equal? "100" (substring packet 3 6)))
-
-(define (decode-literal-packet str)
-  (/> str (curryr substring 6) parse-literal-value))
-
-;; grabs characters in groups of five
-;; and watches the prefix
-;; the trailing digits will always be 0 but we don't take advantage of that
-;; this is the first time I've ever wanted to comment out a comment:
-;; ;; we could use the trailing 0s and not the prefix - except we wouldn't know
-;; ;; when it's an actual zero.. or we could just look for whole groups of 5
-;; ;; and ignore the prefixes and the trailing digits completely
-;; it turns out we don't know the length, and for part i at least, we don't
-;; need the value - but the way of finding out where the packet ends above
-;; means we can get the length from the info - and can pass in the whole
-;; rest of the transmission, and calculate the length - knowing that we have to
-;; round up to the number of digits to fit hex digits - we aren't using the
-;; value right now, but I'm just gonna use the function anyway, expecially
-;; since it is well tested using their example
-(define (parse-literal-value str [acc '()])
-  (let ([prefix (substring str 0 1)] [digits (cons (substring str 1 5) acc)])
-    (if (equal? prefix "0")
-        (/> digits
-            reverse
-            (curry apply string-append)
-            (curryr string->number 2))
-        (parse-literal-value (substring str 5) digits))))
-
-;; anything that starts with decode - the packet header is included even though
-;; we already know what it is and that's why we are using the function
-;; (define (decode-length-type-0 str)
