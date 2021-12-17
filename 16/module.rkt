@@ -1,9 +1,20 @@
 #lang racket
 
+(define ns (make-base-namespace))
+
 (require "./lib.rkt")
 (require "./literal.rkt")
 
 (provide parse-bits-transmission)
+(provide bits-packet-version-total)
+
+(define (bits-packet-version-total transmission)
+  (eval (parse-bits-transmission evaluator transmission) ns))
+
+(define (evaluator version operation . body)
+  (if (equal? operation "100")
+      version
+      (apply + version body)))
 
 ;; these are kind of dual purpose
 ;; it works as an enum to be able to follow what the code means
@@ -44,7 +55,7 @@
                   (curryr string->number 2))]
              [body+
               (/> content skip1 (curryr substring subpacket-bit-count-len))])
-         (list (list fn
+         (list (apply list fn
                      version
                      operation
                      (/> body+
@@ -60,13 +71,13 @@
               [tmp (take-subpackets fn body+ subpacket-count)]
               [subpackets (car tmp)]
               [leftovers (last tmp)])
-         (list (list fn version operation subpackets) leftovers))])))
+         (list (apply list fn version operation subpackets) leftovers))])))
 
 (define (get-all-subpackets-in fn body [result '()])
   (if (= (string-length body) 0)
       (reverse result)
       (let* ([tmp (next fn body)] [subpacket (car tmp)] [leftovers (last tmp)])
-        (get-all-subpackets-in leftovers (cons subpacket result)))))
+        (get-all-subpackets-in fn leftovers (cons subpacket result)))))
 
 (define (take-subpackets fn body+ n [result '()])
   (if (= n 0)
@@ -74,7 +85,7 @@
       (let* ([tmp (next fn body+)] ; tried to use let-values
              [subpacket (car tmp)] ; but then I realised it's not for lists
              [leftovers (last tmp)]) ; so using 'tmp'
-        (take-subpackets leftovers (- n 1) (cons subpacket result)))))
+        (take-subpackets fn leftovers (- n 1) (cons subpacket result)))))
 
 (define (skip1 str)
   (substring str 1))
