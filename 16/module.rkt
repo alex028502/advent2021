@@ -12,13 +12,13 @@
 (define subpacket-count-len 11)
 
 ;; only work with binary strings
-(define (parse-bits-transmission str)
+(define (parse-bits-transmission fn str)
   (/> str
       (curry string-append "1") ; add a 1 to keep the leading 0s
       (curryr string->number 16)
       (curryr number->string 2)
       (curryr substring 1) ; remove the 1 I added before
-      next
+      (curry next fn)
       car))
 
 ;; I am using a binary string - If this had to run all day every day and scale
@@ -26,19 +26,16 @@
 ;; (or I mind find out that I have to do it now for a reason that I don't know
 ;; about yet) then I could just implement a drop in replacement for substring
 
-(define (next transmission)
+(define (next fn transmission)
   (let ([version (string->number (substring transmission 0 3) 2)]
         [operation (substring transmission 3 6)]
         [content (substring transmission 6)])
     (cond
-     [(equal? operation "100")
-      (let* ([tmp (take-literal-packet content)]
-             [value (car tmp)]
-             [leftover (last tmp)])
-        (list (list version
-                    operation
-                    value)
-              leftover))]
+      [(equal? operation "100")
+       (let* ([tmp (take-literal-packet content)]
+              [value (car tmp)]
+              [leftover (last tmp)])
+         (list (list fn version operation value) leftover))]
       [(= (operator-len-str-len transmission) subpacket-bit-count-len)
        (let ([subpacket-bit-count
               (/> content
@@ -47,11 +44,12 @@
                   (curryr string->number 2))]
              [body+
               (/> content skip1 (curryr substring subpacket-bit-count-len))])
-         (list (list version
+         (list (list fn
+                     version
                      operation
                      (/> body+
                          (curryr substring 0 subpacket-bit-count)
-                         get-all-subpackets-in))
+                         (curry get-all-subpackets-in fn)))
                (substring body+ subpacket-bit-count)))]
       [else
        (let* ([subpacket-count (/> content
@@ -59,21 +57,21 @@
                                    (curryr substring 0 subpacket-count-len)
                                    (curryr string->number 2))]
               [body+ (/> content skip1 (curryr substring subpacket-count-len))]
-              [tmp (take-subpackets body+ subpacket-count)]
+              [tmp (take-subpackets fn body+ subpacket-count)]
               [subpackets (car tmp)]
               [leftovers (last tmp)])
-         (list (list version operation subpackets) leftovers))])))
+         (list (list fn version operation subpackets) leftovers))])))
 
-(define (get-all-subpackets-in body [result '()])
+(define (get-all-subpackets-in fn body [result '()])
   (if (= (string-length body) 0)
       (reverse result)
-      (let* ([tmp (next body)] [subpacket (car tmp)] [leftovers (last tmp)])
+      (let* ([tmp (next fn body)] [subpacket (car tmp)] [leftovers (last tmp)])
         (get-all-subpackets-in leftovers (cons subpacket result)))))
 
-(define (take-subpackets body+ n [result '()])
+(define (take-subpackets fn body+ n [result '()])
   (if (= n 0)
       (list (reverse result) body+)
-      (let* ([tmp (next body+)] ; tried to use let-values
+      (let* ([tmp (next fn body+)] ; tried to use let-values
              [subpacket (car tmp)] ; but then I realised it's not for lists
              [leftovers (last tmp)]) ; so using 'tmp'
         (take-subpackets leftovers (- n 1) (cons subpacket result)))))
