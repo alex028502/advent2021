@@ -31,7 +31,14 @@
         [operation (substring transmission 3 6)]
         [content (substring transmission 6)])
     (cond
-      [(equal? operation "100") (take-literal-packet content)]
+     [(equal? operation "100")
+      (let* ([tmp (take-literal-packet content)]
+             [value (car tmp)]
+             [leftover (last tmp)])
+        (list (list version
+                    operation
+                    value)
+              leftover))]
       [(= (operator-len-str-len transmission) subpacket-bit-count-len)
        (let ([subpacket-bit-count
               (/> content
@@ -59,13 +66,13 @@
 
 (define (get-all-subpackets-in body [result '()])
   (if (= (string-length body) 0)
-      result
+      (reverse result)
       (let* ([tmp (next body)] [subpacket (car tmp)] [leftovers (last tmp)])
         (get-all-subpackets-in leftovers (cons subpacket result)))))
 
 (define (take-subpackets body+ n [result '()])
   (if (= n 0)
-      (list result body+)
+      (list (reverse result) body+)
       (let* ([tmp (next body+)] ; tried to use let-values
              [subpacket (car tmp)] ; but then I realised it's not for lists
              [leftovers (last tmp)]) ; so using 'tmp'
