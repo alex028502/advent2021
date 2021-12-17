@@ -13,7 +13,13 @@
 
 ;; only work with binary strings
 (define (parse-bits-transmission str)
-  (/> str (curryr string->number 16) (curryr number->string 2) next car))
+  (/> str
+      (curry string-append "1") ; add a 1 to keep the leading 0s
+      (curryr string->number 16)
+      (curryr number->string 2)
+      (curryr substring 1) ; remove the 1 I added before
+      next
+      car))
 
 ;; I am using a binary string - If this had to run all day every day and scale
 ;; to millions of users, I guess I would change it to shift bits the end
@@ -25,19 +31,15 @@
         [operation (substring transmission 3 6)]
         [content (substring transmission 6)])
     (cond
-      [(equal? operation "100")
-       (let ([value (literal-packet-value transmission)])
-         (list (list version operation value)
-               (substring transmission
-                          (ceiling4 (literal-packet-length value)))))]
-      [(= (operator-len-str-len transmission) subpacket-bit-count-len)
-       (let ([subpacket-bit-count
-              (/> content
-                  skip1
-                  (curryr substring 0 subpacket-bit-count-len)
-                  (curryr string->number 2))]
-             [body+ (/> transmission
-                        content
+     [(equal? operation "100")
+      (take-literal-packet content)]
+     [(= (operator-len-str-len transmission) subpacket-bit-count-len)
+      (let ([subpacket-bit-count
+             (/> content
+                 skip1
+                 (curryr substring 0 subpacket-bit-count-len)
+                 (curryr string->number 2))]
+             [body+ (/> content
                         skip1
                         (curryr substring subpacket-bit-count-len))])
          (list (list version
@@ -46,29 +48,32 @@
                          (curryr substring 0 subpacket-bit-count)
                          get-all-subpackets-in))
                (substring body+ subpacket-bit-count)))]
-      [else (let* ([subpacket-count (/> transmission
-                                        content
+      [else (let* ([subpacket-count (/> content
                                         skip1
                                         (curryr substring 0 subpacket-count-len)
                                         (curryr string->number 2))]
-                   [body+ (/> transmission
-                              content
+                   [body+ (/> content
                               skip1
-                              (curryr substring subpacket-count-len))])
-              (let-values ([(subpackets leftovers)
-                            (take-subpackets body+ subpacket-count)])
-                (list (list version operation subpackets) leftovers)))])))
+                              (curryr substring subpacket-count-len))]
+                   [tmp (take-subpackets body+ subpacket-count)]
+                   [subpackets (car tmp)]
+                   [leftovers (last tmp)])
+              (list (list version operation subpackets) leftovers))])))
 
 (define (get-all-subpackets-in body [result '()])
   (if (= (string-length body) 0)
       result
-      (let-values ([(subpacket leftovers) (next body)])
+      (let* ([tmp (next body)]
+             [subpacket (car tmp)]
+             [leftovers (last tmp)])
         (get-all-subpackets-in leftovers (cons subpacket result)))))
 
 (define (take-subpackets body+ n [result '()])
   (if (= n 0)
       (list result body+)
-      (let-values ([(subpacket leftovers) (next body+)])
+      (let* ([tmp (next body+)] ; tried to use let-values
+             [subpacket (car tmp)] ; but then I realised it's not for lists
+             [leftovers (last tmp)]) ; so using 'tmp'
         (take-subpackets leftovers (- n 1) (cons subpacket result)))))
 
 (define (skip1 str)

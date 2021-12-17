@@ -4,13 +4,16 @@
 
 (require "./module.rkt")
 (require "./literal.rkt")
+(require "./lib.rkt")
+
+(define (packet-content packet)
+  (substring packet 6))
 
 (check-equal? (parse-bits-transmission "38006F45291200")
               '(#b1 "110" (#b110 "100" 10) (#b101 "100" 20)))
 
 (check-equal? (parse-bits-transmission "EE00D40C823060")
               '(#b111 "011" (#b010 "100" 1) (#b100 "100" 2) (#b001 "100" 3)))
-
 
 ; from example
 (define packet2021-bin "110100101111111000101000")
@@ -19,8 +22,7 @@
 (check-equal? (string->number packet2021-hex 16)
               (string->number packet2021-bin 2))
 
-(check-equal? (parse-bits-transmission packet2021-hex)
-              '(#b110 "100" 2021))
+(check-equal? (parse-bits-transmission packet2021-hex) '(#b110 "100" 2021))
 
 #|
 ;; detailed example except I had to get the version bits out of the example
@@ -39,21 +41,22 @@
 
 
 
+(check-equal? (take-literal-packet (packet-content packet2021-bin)) '(2021 "000"))
 
-(check-equal? (literal-packet-value packet2021-bin) 2021)
+;; get rid of the last three digits to make sure it can handle nothing after
+(check-equal? (/> packet2021-bin
+                  (curryr string->number 2) ; only works because we know it
+                  (curryr arithmetic-shift -3) ; starts with a 1 and not 0
+                  (curryr number->string 2)
+                  packet-content
+                  take-literal-packet)
+              '(2021 ""))
 
-;; (check-equal?
-;;  (decode-literal-packet (string-append packet2021 "01010101000011111"))
-;;  2021)
-
-;; ; and this is the function that uses the above function in a roundabout way
 ;; (let ([rest-of-transmission "101011100010101"])
-;;   (check-equal? (next (string-append packet2021 rest-of-transmission))
-;;                 (list 6 rest-of-transmission)))
+;;   (check-equal? (take-literal-packet
+;;                  (packet-content (string-append packet2021-bin rest-of-transmission)))
+;;                 (list 2021 rest-of-transmission)))
 
-;; (let ([rest-of-transmission "101011100010101"]
-;;       [sample "00111000000000000110111101000101001010010001001000000000"])
-;;   (check-equal? (get-subpackets-and-rest-of-transmission1
-;;                  (string-append sample
-;;                                 rest-of-transmission))
-;;                 (list '() rest-of-transmission)))
+
+;; from inside one of the examples
+(check-equal? (take-literal-packet (packet-content "11010001010")) '(10 ""))
