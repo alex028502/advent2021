@@ -2,8 +2,14 @@
 
 (require rackunit)
 
-(require "module.rkt")
-(require "literal.rkt")
+(require "./module.rkt")
+(require "./literal.rkt")
+
+(check-equal? (parse-bits-transmission "38006F45291200")
+              '(#b1 "110" (b#110 "100" 10) (#b101 "100" 20)))
+
+(check-equal? (parse-bits-transmission "EE00D40C823060")
+              '(b#111 "011" (b#010 "100" 1) (b#100 "100" 2) (b#001 "100" 3)))
 
 ;; detailed example except I had to get the version bits out of the example
 ;; string

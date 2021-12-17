@@ -2,7 +2,18 @@
 
 (require "./lib.rkt")
 
-(provide decode-literal-packet)
+(provide literal-packet-value)
+(provide literal-packet-length)
+
+;; this finds the value and then reverses the process
+;; undoing many of the steps below
+;; this does not include the right side padding
+;; since I think that is gonna be the same for all packets
+(define (literal-packet-length value)
+  (/> value
+      (curryr number->string 16)
+      string-length
+      (curry * 5)))
 
 ;; this is not used as intended in part i
 ;; but since I followed the instructions and have a test for, and will probably
@@ -13,8 +24,8 @@
 ;; engineered later because I am not sure if all packets follow the rule that
 ;; they have to fit into hex or only the literal ones so I have to try both
 
-(define (decode-literal-packet str)
-  (/> str (curryr substring 6) parse-literal-value))
+(define (literal-packet-value str)
+  (/> str packet-content parse-literal-value))
 
 ;; grabs characters in groups of five
 ;; and watches the prefix

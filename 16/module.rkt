@@ -3,29 +3,26 @@
 (require "./lib.rkt")
 (require "./literal.rkt")
 
-(provide bites-packet-version-total)
+(provide parse-bits-transmission)
 
-(define (/> . args)
-  ((apply compose (reverse (cdr args))) (car args)))
+;; these are kind of dual purpose
+;; it works as an enum to be able to follow what the code means
+;; but then also is the actual number
+(define subpacket-bit-count-len 15)
+(define subpacket-count-len 11)
 
 ;; only work with binary strings
 ;; even to find the end of the literal package later, I'll just count in fours
-(define (bites-packet-version-total str)
+(define (parse-bits str)
   (/> str
       (curryr string->number 16)
       (curryr number->string 2)
-      binary-bites-packet-version-total))
+      next))
 
 ;; I am using a binary string - If this had to run all day every day and scale
 ;; to millions of users, I guess I would change it to shift bits the end
 ;; (or I mind find out that I have to do it now for a reason that I don't know
 ;; about yet) then I could just implement a drop in replacement for substring
-
-(define (binary-bites-packet-version-total transmission [acc 0])
-  (if (< (string-length transmission) 6)
-      acc
-      (binary-bites-packet-version-total (next transmission)
-                                         (+ acc (version transmission)))))
 
 ;; wait a minute! - what's the difference between "the rest of the
 ;; transmission" and "subpackets"? - maybe I can take a shortcut
@@ -36,6 +33,64 @@
 
 ;; gives a value and the remainder of the transmission
 
+;; returns the "version total" of the next packet, and any leftovers
+
+(define (next transmission)
+  (let ([version (substring transmission 0 3)]
+        [operation (substring transmission 3 6)]
+        [content (substring transmission 6)])
+    (cond [(equal? operation "100")
+           (let ([value (literal-packet-value transmission)])
+             (list (list version operation value)
+                   (substring transmission
+                              (ceiling4 (literal-packet-length value)))))]
+          [(= (operator-len-str-len transmission) subpacket-bit-count-len)
+           (let ([subpacket-bit-count (/> content
+                                          skip1
+                                          (curryr substring
+                                                  0
+                                                  subpacket-bit-count-len)
+                                          (curryr string->number 2))]
+                 [body+ (/> transmission
+                            content
+                            skip1
+                            (curryr substring subpacket-bit-count-len))])
+             (list (list version
+                         operation
+                         (/> body+
+                             (curryr substring 0 subpacket-bit-count)
+                             get-all-subpackets-in))
+                   (substring body+ subpacket-bit-count)))]
+          [else (let* ([subpacket-count (/> transmission
+                                           content
+                                           skip1
+                                    (curryr substring 0 subpacket-count-len)
+                                    (curryr string->number 2))]
+                 [body+ (/> transmission
+                            content
+                            skip1
+                            (curryr substring subpacket-count-len))]
+                 [tmp (take-subpackets body+ subpacket-count)]
+                 [subpackets (car tmp)]
+                 [leftovers (last tmp)])
+                  (list (list version
+                              operation
+                              subpackets) ; couldn't think of a name for var
+                        leftovers))])))
+                         
+
+(define (get-all-subpackets-in body)
+  '())
+
+
+(define (take-subpackets body+)
+  '())
+
+
+(define (skip1 str)
+  (substring str 1))                 
+               
+|#
 (define (next transmission)
   (let ([v (version transmission)]
         [content (subtring transmission 6)])
@@ -60,15 +115,8 @@
             (list 10
                  (substring (content transmission)
                             (+ l 1)))
+#|
 
-;; I don't know if I need this all the time or just for literals
-;; it would be strange if operator expressions were able to go out of phase
-;; with the hex digits but literals weren't
-(define (fit-length-into-hex len)
-  (/> len
-      (curryr / 4)
-      ceiling
-      (curry * 4)))
       
 
         ;;   (/> transmission
@@ -77,14 +125,6 @@
         ;;       (curryr substring )))))
 
 (define (operator-len-str-len transmission)
-  (if (equal? (substring transmission 6 7) "0") 15 11))
-
-(define (version packet)
-  (/> packet (curryr substring 0 3) (curryr string->number 2)))
-
-(define (content packet)
-  (substring packet 6))
-
-
-(define (is-literal packet)
-  (equal? "100" (substring packet 3 6)))
+  (if (equal? (substring transmission 6 7) "0")
+      subpacket-bit-count-len
+      subpacket-count-len))
