@@ -31,41 +31,36 @@
         [operation (substring transmission 3 6)]
         [content (substring transmission 6)])
     (cond
-     [(equal? operation "100")
-      (take-literal-packet content)]
-     [(= (operator-len-str-len transmission) subpacket-bit-count-len)
-      (let ([subpacket-bit-count
-             (/> content
-                 skip1
-                 (curryr substring 0 subpacket-bit-count-len)
-                 (curryr string->number 2))]
-             [body+ (/> content
-                        skip1
-                        (curryr substring subpacket-bit-count-len))])
+      [(equal? operation "100") (take-literal-packet content)]
+      [(= (operator-len-str-len transmission) subpacket-bit-count-len)
+       (let ([subpacket-bit-count
+              (/> content
+                  skip1
+                  (curryr substring 0 subpacket-bit-count-len)
+                  (curryr string->number 2))]
+             [body+
+              (/> content skip1 (curryr substring subpacket-bit-count-len))])
          (list (list version
                      operation
                      (/> body+
                          (curryr substring 0 subpacket-bit-count)
                          get-all-subpackets-in))
                (substring body+ subpacket-bit-count)))]
-      [else (let* ([subpacket-count (/> content
-                                        skip1
-                                        (curryr substring 0 subpacket-count-len)
-                                        (curryr string->number 2))]
-                   [body+ (/> content
-                              skip1
-                              (curryr substring subpacket-count-len))]
-                   [tmp (take-subpackets body+ subpacket-count)]
-                   [subpackets (car tmp)]
-                   [leftovers (last tmp)])
-              (list (list version operation subpackets) leftovers))])))
+      [else
+       (let* ([subpacket-count (/> content
+                                   skip1
+                                   (curryr substring 0 subpacket-count-len)
+                                   (curryr string->number 2))]
+              [body+ (/> content skip1 (curryr substring subpacket-count-len))]
+              [tmp (take-subpackets body+ subpacket-count)]
+              [subpackets (car tmp)]
+              [leftovers (last tmp)])
+         (list (list version operation subpackets) leftovers))])))
 
 (define (get-all-subpackets-in body [result '()])
   (if (= (string-length body) 0)
       result
-      (let* ([tmp (next body)]
-             [subpacket (car tmp)]
-             [leftovers (last tmp)])
+      (let* ([tmp (next body)] [subpacket (car tmp)] [leftovers (last tmp)])
         (get-all-subpackets-in leftovers (cons subpacket result)))))
 
 (define (take-subpackets body+ n [result '()])
