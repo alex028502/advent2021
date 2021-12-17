@@ -38,12 +38,18 @@
               (+ 7 0 #b010 #b100 #b001))
 
 (check-equal? (bits-packet-version-total "8A004A801A8002F478") 16)
-
 (check-equal? (bits-packet-version-total "620080001611562C8802118E34") 12)
-
 (check-equal? (bits-packet-version-total "C0015000016115A2E0802F182340") 23)
-
 (check-equal? (bits-packet-version-total "A0016C880162017C3686B18A3D4780") 31)
+
+(check-equal? (decode-bits-message "C200B40A82") 3)
+(check-equal? (decode-bits-message "04005AC33890") 54)
+(check-equal? (decode-bits-message "880086C3E88112") 7)
+(check-equal? (decode-bits-message "CE00C43D881120") 9)
+(check-equal? (decode-bits-message "D8005AC2A8F0") 1)
+(check-equal? (decode-bits-message "F600BC2D8F") 0)
+(check-equal? (decode-bits-message "9C005AC2F8F0") 0)
+(check-equal? (decode-bits-message "9C0141080250320F1802104A08") 1)
 
 (check-equal? (take-literal-packet (packet-content packet2021-bin))
               '(2021 "000"))

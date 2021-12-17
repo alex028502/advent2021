@@ -603,12 +603,23 @@ def test_15_part_ii(data_dir, sut_dir):
 
 
 # this is only one sample of 4 - most samples are covered by unit tests
-def test_16(data_dir, sut_dir):
+def test_16_part_i(data_dir, sut_dir):
     input_file_path = "%s/16.txt" % data_dir
 
     output = get_output(
         "%s/16/program.rkt" % sut_dir,
         input_file_path,
+        "--version-sum",
     )
 
     assert output == "31"
+
+
+def test_16_part_ii(data_dir, sut_dir, tmp_path):
+    input_file_path = raw_input_file(tmp_path, "880086C3E88112")
+    output = get_output(
+        "%s/16/program.rkt" % sut_dir,
+        input_file_path,
+    )
+
+    assert output == "7"

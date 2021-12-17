@@ -99,4 +99,6 @@ jobs:
     #   run: venv/bin/python 15/program.py 15/input.txt --5x5
     # 2881 - takes almost 17 minutes
     - name: day 16 part i
+      run: racket 16/program.rkt 16/input.txt --version-sum
+    - name: day 16 part ii
       run: racket 16/program.rkt 16/input.txt

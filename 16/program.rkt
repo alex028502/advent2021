@@ -5,10 +5,17 @@
 (require "module.rkt")
 (require "lib.rkt")
 
-(define (main path)
-  (/> path file->lines (curryr list-ref 0) bits-packet-version-total))
+(define (main method path)
+  (/> path file->lines (curryr list-ref 0) method))
 
-(display
- (/> (current-command-line-arguments) (curryr vector-ref 0) (curry main)))
+;; cheat a bit with this argument - doesn't actually look at the argument
+(define (get-method)
+  (if (> (vector-length (current-command-line-arguments)) 1)
+      bits-packet-version-total
+      decode-bits-message))
+
+(display (/> (current-command-line-arguments)
+             (curryr vector-ref 0)
+             (curry main (get-method))))
 
 (display "\n")

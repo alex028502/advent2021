@@ -7,11 +7,27 @@
 
 (provide parse-bits-transmission)
 (provide bits-packet-version-total)
+(provide decode-bits-message)
 
 (define (bits-packet-version-total transmission)
+  (eval (parse-bits-transmission version-totaller transmission) ns))
+
+(define (decode-bits-message transmission)
   (eval (parse-bits-transmission evaluator transmission) ns))
 
 (define (evaluator version operation . body)
+  (let ([op-val (string->number operation 2)])
+    (cond
+      [(= op-val 4) (car body)]
+      [(= op-val 0) (apply + body)]
+      [(= op-val 1) (apply * body)]
+      [(= op-val 2) (apply min body)]
+      [(= op-val 3) (apply max body)]
+      [(= op-val 5) (if (apply > body) 1 0)]
+      [(= op-val 6) (if (apply < body) 1 0)]
+      [(= op-val 7) (if (apply = body) 1 0)])))
+
+(define (version-totaller version operation . body)
   (if (equal? operation "100") version (apply + version body)))
 
 ;; these are kind of dual purpose
