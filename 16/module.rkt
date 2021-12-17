@@ -46,25 +46,24 @@
                          (curryr substring 0 subpacket-bit-count)
                          get-all-subpackets-in))
                (substring body+ subpacket-bit-count)))]
-      [else
-       (let* ([subpacket-count (/> transmission
-                                   content
-                                   skip1
-                                   (curryr substring 0 subpacket-count-len)
-                                   (curryr string->number 2))]
-              [body+ (/> transmission
-                         content
-                         skip1
-                         (curryr substring subpacket-count-len))])
-         (let-values ([(subpackets leftovers) (take-subpackets body+ subpacket-count)])
-           (list (list version operation subpackets) leftovers)))])))
+      [else (let* ([subpacket-count (/> transmission
+                                        content
+                                        skip1
+                                        (curryr substring 0 subpacket-count-len)
+                                        (curryr string->number 2))]
+                   [body+ (/> transmission
+                              content
+                              skip1
+                              (curryr substring subpacket-count-len))])
+              (let-values ([(subpackets leftovers)
+                            (take-subpackets body+ subpacket-count)])
+                (list (list version operation subpackets) leftovers)))])))
 
 (define (get-all-subpackets-in body [result '()])
   (if (= (string-length body) 0)
       result
       (let-values ([(subpacket leftovers) (next body)])
         (get-all-subpackets-in leftovers (cons subpacket result)))))
-
 
 (define (take-subpackets body+ n [result '()])
   (if (= n 0)
