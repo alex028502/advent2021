@@ -611,4 +611,4 @@ def test_16(data_dir, sut_dir):
         input_file_path,
     )
 
-    assert "31" in output  # real answer is 31
+    assert output == "31"
