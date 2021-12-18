@@ -7,6 +7,10 @@
 
 #|
 
+I was working on this library "called unit" because it gets unit tested, so
+it's like the unit that the unit test tests.. I was working on it and then
+didn't need it.  I'll either use it for part ii, or delete it.
+
 (define (optimise x0 x1 y0 y1)
 
 |#

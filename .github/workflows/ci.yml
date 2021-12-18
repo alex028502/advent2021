@@ -33,6 +33,8 @@ jobs:
       run: venv/bin/pytest -vv
     - name: Unit Tests - day 16
       run: raco test 16/unit.rkt
+    - name: Unit Tests - day 17 might be needed in part ii
+      run: raco test 17/unused/test.rkt
     - name: Format Check
       run: ./format-check.sh
     - name: practice round (day 1 from 2020)

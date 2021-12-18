@@ -6,6 +6,12 @@
 
 #|
 
+UNUSED
+it turns out I didn't need to know this for part i. I could have done it this
+way once I had narrowed down the range.. but I eventually narrowed down the
+range to one vertical velocity, and figured out that I don't need to know the
+horizontal component to answer the question
+
 there are nine zones - but some can be grouped
 take a look at sample.txt
 

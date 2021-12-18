@@ -623,3 +623,16 @@ def test_16_part_ii(data_dir, sut_dir, tmp_path):
     )
 
     assert output == "7"
+
+
+def test_17_part_i(data_dir, sut_dir, tmp_path):
+    input_file_path = raw_input_file(
+        tmp_path,
+        "target area: x=20..30, y=-10..-5",
+    )
+    output = get_output(
+        "%s/17/program.rkt" % sut_dir,
+        input_file_path,
+    )
+
+    assert output == "45"
