@@ -67,12 +67,10 @@ list-ref is (- 1 y)
 ;; example from question
 (let ([sut (curry check-trajectory 20 30 -10 -5)])
   (begin
-    (check-equal? (car (sut '(7 2))) 3)
-    (check-equal? (car (sut '(6 3))) 6)
-    (check-equal? (car (sut '(9 0))) 0)
-    (check-equal? (car (sut '(17 -4))) "U")
-    (check-equal? (car (sut '(6 9))) 45)
-    (check-equal? (car (sut '(0 0))) "S" "had to up my own example")
-    (check-equal? (car (sut '(10 10))) "L" "had to make up my own example")))
-
-;(check-equal? (find-best-apex-for-vx 20 30 -10 -5 6) 45)
+    (check-equal? (sut '(7 2)) 3)
+    (check-equal? (sut '(6 3)) 6)
+    (check-equal? (sut '(9 0)) 0)
+    (check-equal? (sut '(17 -4)) "U")
+    (check-equal? (sut '(6 9)) 45)
+    (check-equal? (sut '(0 0)) "S") ;; they didn't give an example for this
+    (check-equal? (sut '(10 10)) "L"))) ;; or this

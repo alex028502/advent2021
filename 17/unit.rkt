@@ -1,6 +1,5 @@
 #lang racket
 
-(provide find-best-apex-for-vx)
 (provide check-position)
 (provide check-trajectory)
 (provide />)
@@ -43,16 +42,17 @@ didn't need it.  I'll either use it for part ii, or delete it.
 ;;                                                                  apex
 ;;                                                                  0))))))
 
-(define (check-trajectory x0 x1 y0 y1 v [path '((0 0))] [apex 0])
-  (let* ([pos (car path)]
-         [result (apply check-position x0 x1 y0 y1 pos)]
-         [acme (max (last pos) apex)]) ;; instead of "new-apex"
+(define (check-trajectory x0 x1 y0 y1 v [pos '(0 0)] [apex 0])
+  (let ([result (apply check-position x0 x1 y0 y1 pos)]
+        [acme (max (last pos) apex)]) ;; instead of "new-apex"
     (if result
-        (list (if (equal? result "T") acme result) path)
-        (let* ([next-v-pos-tmp (next-v-pos v pos)]
-               [next-v (car next-v-pos-tmp)]
-               [next-pos (last next-v-pos-tmp)])
-          (check-trajectory x0 x1 y0 y1 next-v (cons next-pos path) acme)))))
+        (if (equal? result "T") acme result)
+        (apply check-trajectory
+               x0
+               x1
+               y0
+               y1
+               (append (next-v-pos v pos) (list acme))))))
 
 (define (next-v-pos v pos)
   (list (list (max 0 (sub1 (car v))) ; we never shoot backwards
