@@ -23,9 +23,9 @@
                (append (next-v-pos v pos) (list acme))))))
 
 (define (next-v-pos v pos)
-  (list (apply map + v pos)
-        (list (max 0 (sub1 (car v))) ; we never shoot backwards
-              (sub1 0))))
+  (list (list (max 0 (sub1 (car v))) ; we never shoot backwards
+              (sub1 (last v)))
+        (apply map + (list v pos))))
 
 ;; see diagram in test to find out what this means
 (define (check-position x0 x1 y0 y1 x y)
