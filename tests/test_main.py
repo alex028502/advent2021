@@ -630,15 +630,15 @@ def test_17(data_dir, sut_dir, tmp_path):
         tmp_path,
         "target area: x=20..30, y=-10..-5",
     )
-    output = get_output(
-        "%s/17/program.rkt" % sut_dir,
+    output_i = get_output(
+        "%s/17/part-i/program.rkt" % sut_dir,
         input_file_path,
     )
 
-    assert output == "45"
+    assert output_i == "45"
 
     output_ii = get_output(
-        "%s/17/part-ii.rkt" % sut_dir,
+        "%s/17/part-ii/program.rkt" % sut_dir,
         input_file_path,
     )
 
