@@ -3,46 +3,33 @@
 (provide check-position)
 (provide check-trajectory)
 (provide />)
+(provide count-on-target-probe-v0)
 
-#|
+(define (count-on-target-probe-v0 x0 x1 y0 y1)
+  (/> (cartesian-product (range (find-min-vx0-to-reach-x x0) (add1 x1))
+                         (range y0 (- 1 y0)))
+      (curry map (curry check-trajectory x0 x1 y0 y1))
+      (curry filter number?)
+      length))
 
-I was working on this library "called unit" because it gets unit tested, so
-it's like the unit that the unit test tests.. I was working on it and then
-didn't need it.  I'll either use it for part ii, or delete it.
+;; If we just returned 0, it would just take longer
+;; > (find-min-vx0-to-reach-x 10)
+;; 0
+;; > (find-min-vx0-to-reach-x 10)
+;; 4
+;; > (find-min-vx0-to-reach-x 11)
+;; 5
+;; > (find-min-vx0-to-reach-x 9)
+;; 4
+(define (find-min-vx0-to-reach-x x [s 0])
+  (if (>= (apply + (range 0 (add1 s))) x)
+      s
+      (find-min-vx0-to-reach-x x (add1 s))))
 
-(define (optimise x0 x1 y0 y1)
-
-|#
-
-;;(define (find-trajectory-with-style x0 x1 y0 y1)
-
-;; do we need to worry about y less than zero?
-;; if we need it, than the best we can do is apex 0
-;; which means we don't need to worry about short vs unlucky results
-;; at least not for this stage - even though check-position tells us
-
-(define (find-best-apex-for-vx x0 x1 y0 y1 vx [vy 0] [record 0])
-  (let ([apex (check-trajectory x0 x1 y0 y1 (list vx vy))])
-    (if (or (equal? apex "L") (> vy (* 10 x1)))
-        record
-        (find-best-apex-for-vx x0
-                               x1
-                               y0
-                               y1
-                               vx
-                               (add1 vy)
-                               (max record (if (number? apex) apex 0))))))
-
-;; (define (find-best-apex-for-vy x0 x1 y0 y1 vy [vx 1] [record 0])
-;;   (let ([apex (check-trajectory x0 x1 y0 y1 (list vx vy))])
-;;     (if (equal? apex "L")
-;;         record
-;;         (find-best-apex-for-vx x0 x1 y0 y1 vy (add1 vx) (max record
-;;                                                              (if (number? apex)
-;;                                                                  apex
-;;                                                                  0))))))
-
-(define (check-trajectory x0 x1 y0 y1 v [pos '(0 0)] [apex 0])
+;; this returns the max height for every successful shot but I don't use i
+;; this was written this way for my original attempt at part i and is now only
+;; used in part ii
+(define (check-trajectory x0 x1 y0 y1 v0 [pos '(0 0)] [apex 0])
   (let ([result (apply check-position x0 x1 y0 y1 pos)]
         [acme (max (last pos) apex)]) ;; instead of "new-apex"
     (if result
@@ -52,7 +39,7 @@ didn't need it.  I'll either use it for part ii, or delete it.
                x1
                y0
                y1
-               (append (next-v-pos v pos) (list acme))))))
+               (append (next-v-pos v0 pos) (list acme))))))
 
 (define (next-v-pos v pos)
   (list (list (max 0 (sub1 (car v))) ; we never shoot backwards

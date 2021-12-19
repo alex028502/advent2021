@@ -74,3 +74,5 @@ list-ref is (- 1 y)
     (check-equal? (sut '(6 9)) 45)
     (check-equal? (sut '(0 0)) "S") ;; they didn't give an example for this
     (check-equal? (sut '(10 10)) "L"))) ;; or this
+
+(check-equal? (count-on-target-probe-v0 20 30 -10 -5) 112)
