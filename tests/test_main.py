@@ -642,4 +642,9 @@ def test_17(data_dir, sut_dir, tmp_path):
         input_file_path,
     )
 
-    assert output_ii == "112"
+    assert output_ii == "\n".join(
+        [
+            "45 <- answer to part i the hard way",
+            "112 <- answer to part ii",
+        ]
+    )
