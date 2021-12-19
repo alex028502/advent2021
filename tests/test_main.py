@@ -648,3 +648,13 @@ def test_17(data_dir, sut_dir, tmp_path):
             "112 <- answer to part ii",
         ]
     )
+
+
+def test_18(data_dir, sut_dir):
+    input_file_path = "%s/18.txt" % data_dir
+    output = get_output(
+        "%s/18/program.rkt" % sut_dir,
+        input_file_path,
+    )
+
+    assert output == "4140"
