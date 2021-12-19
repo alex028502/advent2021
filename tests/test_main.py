@@ -657,4 +657,4 @@ def test_18(data_dir, sut_dir):
         input_file_path,
     )
 
-    assert output == "4140"
+    assert output == "4140\n3993"
