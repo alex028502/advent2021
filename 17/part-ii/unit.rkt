@@ -11,7 +11,6 @@
       (curry map (curry check-trajectory x0 x1 y0 y1))
       (curry filter number?)))
 
-
 ;; If we just returned 0, it would just take longer
 ;; > (find-min-vx0-to-reach-x 10)
 ;; 0
