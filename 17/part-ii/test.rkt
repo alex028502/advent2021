@@ -75,4 +75,9 @@ list-ref is (- 1 y)
     (check-equal? (sut '(0 0)) "S") ;; they didn't give an example for this
     (check-equal? (sut '(10 10)) "L"))) ;; or this
 
-(check-equal? (count-on-target-probe-v0 20 30 -10 -5) 112)
+(check-equal? (length (get-on-target-probe-v0 20 30 -10 -5))
+              112
+              "answer to part ii")
+(check-equal? (apply max (get-on-target-probe-v0 20 30 -10 -5))
+              45
+              "show that we _could_ use this to answer part i")
