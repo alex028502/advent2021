@@ -3,14 +3,14 @@
 (provide check-position)
 (provide check-trajectory)
 (provide />)
-(provide count-on-target-probe-v0)
+(provide get-on-target-probe-v0)
 
-(define (count-on-target-probe-v0 x0 x1 y0 y1)
+(define (get-on-target-probe-v0 x0 x1 y0 y1)
   (/> (cartesian-product (range (find-min-vx0-to-reach-x x0) (add1 x1))
                          (range y0 (- 1 y0)))
       (curry map (curry check-trajectory x0 x1 y0 y1))
-      (curry filter number?)
-      length))
+      (curry filter number?)))
+
 
 ;; If we just returned 0, it would just take longer
 ;; > (find-min-vx0-to-reach-x 10)

@@ -16,6 +16,7 @@
      (curryr string-split " ")
      (curry map string->number)
      (curry filter identity)
-     (curry apply count-on-target-probe-v0)))
+     (curry apply get-on-target-probe-v0)
+     length))
 
 (display "\n")
