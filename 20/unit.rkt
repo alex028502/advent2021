@@ -14,6 +14,7 @@
 (provide blank-canvas)
 (provide canvas->string)
 (provide image->string)
+(provide infinity-point)
 (provide />)
 
 ;; only debug the total now - but I might actually need it for part ii
@@ -61,6 +62,7 @@
 (define (enhance-image image algorithm)
   (/> image
       all-relevant-points
+      (curry cons infinity-point)
       (curry map
              (λ (pt)
                (/> pt
@@ -72,7 +74,7 @@
 
 ;; point that keeps track of what happens to a typical
 ;; point in the infinite space
-;; (define infinity-point '(-100000000 -100000000))
+(define infinity-point '(-100000000 -100000000))
 
 ;; this method was created in an emergency after I figured out the flaw in the
 ;; original strategy so it mashes up methods that aren't quite made for this
@@ -81,6 +83,7 @@
   (/> lines
       (curry map prepare-line (range (length lines)))
       (curry apply append)
+      (curry cons (cons infinity-point #f))
       make-immutable-hash))
 
 (define (prepare-line y str)
@@ -98,7 +101,11 @@
   (/> neighbours
       (curry map
              (λ (order direction)
-               (if (hash-ref image (point-+ direction pt) #f) (expt 2 order) 0))
+               (if (hash-ref image
+                             (point-+ direction pt)
+                             (hash-ref image infinity-point))
+                   (expt 2 order)
+                   0))
              (range (length neighbours)))
       (curry apply +)))
 
@@ -122,6 +129,7 @@
   (/> image
       hash-keys
       drawing-filter
+      (curry filter (λ (x) (not (equal? x infinity-point))))
       (curry apply map list)
       (curry apply
              (λ (every-x every-y)

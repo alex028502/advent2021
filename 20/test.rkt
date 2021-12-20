@@ -19,7 +19,8 @@
 
 (check-equal? (prepare-image '("#." ".#"))
               (make-immutable-hash
-               '(((0 0) . #t) ((0 1) . #f) ((1 0) . #f) ((1 1) . #t))))
+               (cons (cons infinity-point #f)
+                     '(((0 0) . #t) ((0 1) . #f) ((1 0) . #f) ((1 1) . #t)))))
 
 (check-equal? (point-+ '(1 2) '(3 -3) '(1 1)) '(5 0))
 
