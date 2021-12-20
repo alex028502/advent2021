@@ -683,11 +683,10 @@ def test_20(sut_dir, tmp_path, n):
         input_file_path,
     )
 
-    if n == 2:
-        expected = "35"
-    else:
-        # the 0 times feature is missing
-        # because of the weird recursion style used
-        expected = "24"
+    expected_results = {
+        0: 10,
+        1: 24,
+        2: 35,
+    }
 
-    assert output == expected
+    assert output == str(expected_results[n])

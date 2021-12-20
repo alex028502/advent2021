@@ -50,21 +50,23 @@
 ;; 1 after image enhancement - I am just using the hash to see if there is
 ;; any entry at all for the point
 (define (apply-image-enhancement image algorithm [n 1])
-  (if (> n 1)
-      (apply-image-enhancement (apply-image-enhancement image algorithm)
+  (if (< n 1)
+      image
+      (apply-image-enhancement (enhance-image image algorithm)
                                algorithm
-                               (sub1 n))
-      (/> image
-          all-relevant-points
-          (curry map
-                 (λ (pt)
-                   (/> pt
-                       (curry get-regional-value image)
-                       (curry lookup algorithm)
-                       (curry cons pt))))
-          (curry filter (λ (pt-v) (> (cdr pt-v) 0)))
-          make-immutable-hash)))
+                               (sub1 n))))
 
+(define (enhance-image image algorithm)
+  (/> image
+      all-relevant-points
+      (curry map
+             (λ (pt)
+               (/> pt
+                   (curry get-regional-value image)
+                   (curry lookup algorithm)
+                   (curry cons pt))))
+      (curry filter (λ (pt-v) (> (cdr pt-v) 0)))
+      make-immutable-hash))
 (define (prepare-image lines)
   (/> lines
       (curry map prepare-line (range (length lines)))
