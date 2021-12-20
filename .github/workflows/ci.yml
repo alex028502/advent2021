@@ -37,6 +37,8 @@ jobs:
       run: raco test 17/part-ii/test.rkt
     - name: Unit Tests - day 18
       run: raco test 18/test.rkt
+    - name: Unit Tests - day 20
+      run: raco test 20/test.rkt
     - name: Format Check
       run: ./format-check.sh
     - name: practice round (day 1 from 2020)
@@ -112,3 +114,5 @@ jobs:
       run: racket 17/part-ii/program.rkt 17/input.txt
     - name: day 18
       run: racket 18/program.rkt 18/input.txt
+    - name: day 20 part i
+      run: racket 20/program.rkt 2 20/input.txt
