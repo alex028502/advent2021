@@ -12,7 +12,7 @@
 (define algorithm (prepare-algorithm (list-ref file-lines 0)))
 (define image (prepare-image (drop file-lines 2)))
 
-(define enhanced-image (apply-image-enhancement image algorithm 2))
+(define enhanced-image (apply-image-enhancement image algorithm times))
 
 (display (length (hash-keys enhanced-image)))
 

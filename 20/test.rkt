@@ -40,7 +40,7 @@
                (if (= (lookup algorithm i) 1) "#" ".")
                (substring sample-image-enhancement-algorithm i (+ 1 i))
                i))
-            (range 10))
+            (range 512))
   (check-equal? (get-regional-value image '(2 2)) #b000100010)
   (check-equal? (image->string image)
                 (string-join sample-input-image-lines "\n"))

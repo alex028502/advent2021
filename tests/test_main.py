@@ -660,7 +660,8 @@ def test_18(data_dir, sut_dir):
     assert output == "4140\n3993"
 
 
-def test_20(sut_dir, tmp_path):
+@pytest.mark.parametrize("n", [0, 1, 2])
+def test_20(sut_dir, tmp_path, n):
     input_file_path = "%s/20.txt" % tmp_path
 
     with open(input_file_path, "w") as f:
@@ -678,8 +679,15 @@ def test_20(sut_dir, tmp_path):
 
     output = get_output(
         "%s/20/program.rkt" % sut_dir,
-        "2",
+        str(n),
         input_file_path,
     )
 
-    assert output == "35"
+    if n == 2:
+        expected = "35"
+    else:
+        # the 0 times feature is missing
+        # because of the weird recursion style used
+        expected = "24"
+
+    assert output == expected
