@@ -658,3 +658,28 @@ def test_18(data_dir, sut_dir):
     )
 
     assert output == "4140\n3993"
+
+
+def test_20(sut_dir, tmp_path):
+    input_file_path = "%s/20.txt" % tmp_path
+
+    with open(input_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "racket",
+                "-t",
+                "%s/20/sample.rkt" % sut_dir,
+                "-m",
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    output = get_output(
+        "%s/20/program.rkt" % sut_dir,
+        "2",
+        input_file_path,
+    )
+
+    assert output == "35"
