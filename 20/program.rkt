@@ -14,6 +14,6 @@
 
 (define enhanced-image (apply-image-enhancement image algorithm times))
 
-(display (length (hash-keys enhanced-image)))
+(display (length (filter identity (hash-values enhanced-image))))
 
 (display "\n")

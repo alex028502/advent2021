@@ -18,16 +18,18 @@
 
 ;; only debug the total now - but I might actually need it for part ii
 (define (image->string image)
-  (/> image
-      boundaries
-      (curry apply
-             (λ (min-x max-x min-y max-y)
-               (draw-points-on-canvas
-                (blank-canvas (add1 (- max-x min-x)) (add1 (- max-y min-y)))
-                (/> image
-                    hash-keys
-                    (curry map (curry point-+ (list (- min-x) (- min-y))))))))
-      canvas->string))
+  (let ([drawing-filter (curry filter (curry hash-ref image))])
+    (/> image
+        (curryr boundaries drawing-filter)
+        (curry apply
+               (λ (min-x max-x min-y max-y)
+                 (draw-points-on-canvas
+                  (blank-canvas (add1 (- max-x min-x)) (add1 (- max-y min-y)))
+                  (/> image
+                      hash-keys
+                      drawing-filter
+                      (curry map (curry point-+ (list (- min-x) (- min-y))))))))
+        canvas->string)))
 
 (define (canvas->string canvas)
   (/> canvas
@@ -67,21 +69,25 @@
                    (curry cons pt))))
       (curry filter (λ (pt-v) (> (cdr pt-v) 0)))
       make-immutable-hash))
+
+;; point that keeps track of what happens to a typical
+;; point in the infinite space
+;; (define infinity-point '(-100000000 -100000000))
+
+;; this method was created in an emergency after I figured out the flaw in the
+;; original strategy so it mashes up methods that aren't quite made for this
+;; because of this the image contain one rank and file more than what is needed
 (define (prepare-image lines)
   (/> lines
       (curry map prepare-line (range (length lines)))
       (curry apply append)
-      (curry map (curryr cons #t))
       make-immutable-hash))
 
 (define (prepare-line y str)
   (/> str
       string->list
       (curry map (curry equal? #\#))
-      (curry map list (range (string-length str)))
-      (curry filter last)
-      (curry map car)
-      (curry map (curryr list y))))
+      (curry map cons (map (curryr list y) (range (string-length str))))))
 
 ; order is important - idx is power of two
 ; so not using cartesian-product because i don't know if there is an order
@@ -110,9 +116,12 @@
                (cartesian-product (range (sub1 min-x) (+ 2 max-x))
                                   (range (sub1 min-y) (+ 2 max-y)))))))
 
-(define (boundaries image)
+;; it used to be a good idea to share this but it not longer is so we have
+;; and awkward argument
+(define (boundaries image [drawing-filter identity])
   (/> image
       hash-keys
+      drawing-filter
       (curry apply map list)
       (curry apply
              (λ (every-x every-y)

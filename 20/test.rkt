@@ -15,16 +15,17 @@
   (check-equal? (lookup algorithm 4) 0)
   (check-equal? (lookup algorithm 5) 0))
 
-(check-equal? (prepare-line 2 ".#.#.") '((1 2) (3 2)))
+(check-equal? (prepare-line 2 ".#") '(((0 2) . #f) ((1 2) . #t)))
 
-(check-equal? (prepare-image '("#.." "..#" ".#."))
-              (make-immutable-hash '(((0 0) . #t) ((2 1) . #t) ((1 2) . #t))))
+(check-equal? (prepare-image '("#." ".#"))
+              (make-immutable-hash
+               '(((0 0) . #t) ((0 1) . #f) ((1 0) . #f) ((1 1) . #t))))
 
 (check-equal? (point-+ '(1 2) '(3 -3) '(1 1)) '(5 0))
 
-; the last column only has dots so we get 4x5 instead of 4x6
+; 4x6 after padding, even the empty column
 (check-equal? (length (all-relevant-points (prepare-image '("#..." "..#."))))
-              20)
+              24)
 
 (check-equal?
  (canvas->string (draw-points-on-canvas (blank-canvas 4 4) '((1 1) (2 3))))
@@ -55,9 +56,13 @@
                                    "..##..#"
                                    "...#.#.")
                              "\n"))
-  (check-equal? (length (hash-keys (apply-image-enhancement image algorithm)))
-                24
-                "I counted this number from the picture")
-  (check-equal? (length (hash-keys (apply-image-enhancement image algorithm 2)))
-                35
-                "final answer"))
+  (check-equal?
+   (length (filter identity
+                   (hash-values (apply-image-enhancement image algorithm))))
+   24
+   "I counted this number from the picture")
+  (check-equal?
+   (length (filter identity
+                   (hash-values (apply-image-enhancement image algorithm 2))))
+   35
+   "final answer"))
