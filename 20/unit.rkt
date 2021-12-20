@@ -67,7 +67,7 @@
                    (curry get-regional-value image)
                    (curry lookup algorithm)
                    (curry cons pt))))
-      (curry filter (λ (pt-v) (> (cdr pt-v) 0)))
+      (curry map (λ (pt-v) (cons (car pt-v) (> (cdr pt-v) 0))))
       make-immutable-hash))
 
 ;; point that keeps track of what happens to a typical
