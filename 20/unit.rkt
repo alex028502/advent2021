@@ -49,7 +49,7 @@
 ;; don't mind that the values in the hash are #t when we create it and then
 ;; 1 after image enhancement - I am just using the hash to see if there is
 ;; any entry at all for the point
-(define (apply-image-enhancement image algorithm [n 0])
+(define (apply-image-enhancement image algorithm [n 1])
   (if (< n 1)
       image
       (apply-image-enhancement (enhance-image image algorithm)
