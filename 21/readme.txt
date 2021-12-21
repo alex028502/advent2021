@@ -4,3 +4,6 @@ parse input file - was only two numbers so just used them as arguments.
 The end to end test was not really necessary because the unit tests test the
 main function, except that the first time I ran the program, I realised main was
 set up to accept integers. so always work making sure the whole thing works.
+Actually, then I realised I had put the wrong arguments into the calculation
+section of ci (production) so I made a wrapper bash script to always get the
+arguments right.

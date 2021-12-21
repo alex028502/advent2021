@@ -695,10 +695,8 @@ def test_20(sut_dir, tmp_path, n):
 # not parsing the input file today
 # just passing in two arguments
 def test_21(sut_dir):
-    output = get_output(
-        "-t",
-        "%s/21/module.rkt" % sut_dir,
-        "-m",
+    output = get_output_from(
+        "%s/21/program.sh" % sut_dir,
         "4",
         "8",
     )
