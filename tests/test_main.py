@@ -589,15 +589,36 @@ def test_15_special_cases(data_dir, sut_dir, tmp_path, case):
     assert output == right_answer
 
 
-def test_15_part_ii(data_dir, sut_dir):
+def test_15_part_ii(data_dir, sut_dir, tmp_path):
     program = "%s/15/program.py" % sut_dir
-    input_file_path = "%s/15.txt" % data_dir
+    original_input_file_path = "%s/15.txt" % data_dir
+    input_file_path = "%s/15.txt" % tmp_path
+
+    with open(input_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "venv/bin/python",
+                "%s/15/times5.py" % sut_dir,
+                original_input_file_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    p = subprocess.Popen(
+        [
+            "cat",
+            input_file_path,
+        ],
+    )
+    p.communicate()
+    assert not p.returncode
 
     output = get_output_from(
         "venv/bin/python",
         program,
         input_file_path,
-        "--5x5",
     )
     assert output == "315"
 
