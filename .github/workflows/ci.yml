@@ -120,5 +120,5 @@ jobs:
       run: racket 20/program.rkt 2 20/input.txt
     - name: day 20 part ii
       run: racket 20/program.rkt 50 20/input.txt
-    - name: day 20 part i
-      run: 21/program.sh 2 8
+    - name: day 21 part i
+      run: 21/program.sh 2 8 --practice
