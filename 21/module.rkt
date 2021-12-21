@@ -8,6 +8,14 @@
 
 (define n 3)
 
+;; 10k games takes 46 seconds so I would be surprised if this works
+;; except that we don't actually have to play every game - so who knows
+;; (define (main . start-squares)
+;;   (foldl (λ _
+;;            (apply main- start-squares))
+;;          0
+;;          (range 10000)))
+
 (define (main . start-squares)
   (play (map string->number start-squares)
         (make-list (length start-squares) 0)
