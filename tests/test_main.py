@@ -690,3 +690,15 @@ def test_20(sut_dir, tmp_path, n):
     }
 
     assert output == str(expected_results[n])
+
+
+# not parsing the input file today
+# just passing in two arguments
+def test_21(sut_dir):
+    output = get_output_from(
+        "%s/21/program.sh" % sut_dir,
+        "4",
+        "8",
+    )
+
+    assert output == "739785"
