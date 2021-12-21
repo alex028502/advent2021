@@ -14,10 +14,10 @@
 
 ;; unfortunately no examples for the die turning over but hopefully I can rely
 ;; on the test above
-(check-equal? (roll 3 0) (+ 1 2 3))
-(check-equal? (roll 3 3) (+ 4 5 6))
-(check-equal? (roll 3 6) (+ 7 8 9))
-(check-equal? (roll 3 9) (+ 10 11 12))
+(check-equal? (roll 0) (+ 1 2 3))
+(check-equal? (roll 3) (+ 4 5 6))
+(check-equal? (roll 6) (+ 7 8 9))
+(check-equal? (roll 9) (+ 10 11 12))
 
 (check-equal? (position-+ 3 3) 6)
 (check-equal? (position-+ 7 (+ 2 2 1)) 2)
