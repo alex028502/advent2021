@@ -21,7 +21,7 @@
 (provide rule-in-range)
 
 (define (main path)
-  (let ([rules (parse-rules path)])
+  (let ([rules (filter rule-in-range (parse-rules path))])
     (foldl (λ (next acc)
              (if (find-last-sighting-of-cube rules next) (add1 acc) acc))
            0
