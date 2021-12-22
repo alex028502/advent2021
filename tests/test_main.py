@@ -703,3 +703,13 @@ def test_21(sut_dir):
     )
 
     assert output == "739785"
+
+
+def test_22(data_dir, sut_dir):
+    input_file_path = "%s/22.txt" % data_dir
+    output = get_output_from(
+        "%s/22/program.sh" % sut_dir,
+        input_file_path,
+    )
+
+    assert output == "590784"
