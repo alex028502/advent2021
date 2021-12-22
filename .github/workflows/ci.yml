@@ -125,4 +125,4 @@ jobs:
     - name: day 21 part i
       run: 21/program.sh 2 8 --practice
     - name: day 22 part i
-      run: 22/program.sh 22/input.txt
+      run: 22/program.sh 22/input.txt --initialization-procedure

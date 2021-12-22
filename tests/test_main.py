@@ -710,6 +710,7 @@ def test_22(data_dir, sut_dir):
     output = get_output_from(
         "%s/22/program.sh" % sut_dir,
         input_file_path,
+        "--initialization-procedure",
     )
 
     assert output == "590784"

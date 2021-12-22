@@ -18,9 +18,10 @@
 (check-equal? (in -2 '(-5 -1)) #t)
 (check-equal? (in -2 '(-5 -3)) #f)
 
-(check-equal? (rule-in-range '(#f (1 2) (-10 -2) (3 -40))) #t)
-(check-equal? (rule-in-range '(#f (1 2) (-10 -2) (3 -60))) #f)
-(check-equal? (rule-in-range '(#t (1 2) (-10 -2) (3000 -60))) #f)
+(check-equal? (highest-number-in-rules '((#f (1 2) (-10 -2) (3 -40))
+                                         (#f (1 2) (-10 -2) (3 -60))
+                                         (#t (1 2) (-10 -2) (-3000 60))))
+              3000)
 
 (check-equal? (in3d '(1 2 3) '((1 2) (-20 -12) (-40 3))) #f)
 (check-equal? (in3d '(1 2 3) '((1 2) (-2 4) (-40 3))) #t)

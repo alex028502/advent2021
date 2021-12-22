@@ -14,18 +14,34 @@
 ;;   (let [rules
 
 (provide main)
+(provide init-rules)
 
 (provide in)
 (provide in3d)
 (provide parse-rule)
-(provide rule-in-range)
+(provide highest-number-in-rules)
 
-(define (main path)
-  (let ([rules (filter rule-in-range (parse-rules path))])
-    (foldl (λ (next acc)
-             (if (find-last-sighting-of-cube rules next) (add1 acc) acc))
-           0
-           (apply cartesian-product (make-list 3 (range -50 51))))))
+;; cheat - the arg will either be --init-rules or nothing but I just look if
+;; there is an arg or not
+(define (main . args)
+  (if (> (length args) 0) (init-rules) (main-main)))
+
+(define (main-main)
+  (let* ([rules (parse-rules "/dev/stdin")] [n (highest-number-in-rules rules)])
+    (foldl
+     (λ (next acc) (if (find-last-sighting-of-cube rules next) (add1 acc) acc))
+     0
+     (apply cartesian-product (make-list 3 (range (- n) (add1 n)))))))
+
+;; don't worry about the highest number in each direction unless there is a
+;; problem - just cover that distance up and down each axis
+(define (highest-number-in-rules rules)
+  (/> rules
+      (curry map cdr)
+      (curry apply append)
+      (curry apply append)
+      (curry map abs)
+      (curry apply max)))
 
 (define (find-last-sighting-of-cube rules coordinates)
   (if (= (length rules) 0)
@@ -45,17 +61,26 @@
 (define (in number inclusive-range)
   (and (>= number (car inclusive-range)) (<= number (last inclusive-range))))
 
-(define (rule-in-range rule)
-  (/> rule
-      cdr
-      (curry apply append)
-      (curry map abs)
-      (curry filter (curryr > 50))
-      length
-      (curry = 0)))
-
 (define (parse-rules path)
   (/> path file->lines (curry map parse-rule) reverse))
+;; this is run a a separate main program
+(define (init-rules)
+  (/> (filter (λ (line)
+                (/> line
+                    (curry string->list)
+                    (curry map list)
+                    (curry map list->string)
+                    (curry map (λ (c) (if (string->number c) c " ")))
+                    (curry apply string-append)
+                    (curryr string-split " ")
+                    (curry map string->number)
+                    (curry filter identity)
+                    (curry apply max)
+                    (curryr <= 50)))
+              (file->lines "/dev/stdin"))
+      (curryr string-join "\n")
+      (curryr string-append "\n")
+      display))
 
 (define (parse-rule str)
   (let ([parts (string-split str " ")])
