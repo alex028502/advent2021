@@ -699,6 +699,7 @@ def test_21(sut_dir):
         "%s/21/program.sh" % sut_dir,
         "4",
         "8",
+        "--practice",
     )
 
     assert output == "739785"
