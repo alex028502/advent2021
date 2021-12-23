@@ -68,4 +68,17 @@ for i in range(10000):
     if risk_totals_copy == risk_totals:
         break
 
+
+def fmt(num):
+    return str(num + 1000)[1:]
+
+
+for y in range(dims()[1]):
+    sys.stderr.write(
+        "|".join(
+            map(lambda x: fmt(risk_totals[(x, y)]), range(dims()[0])),
+        )
+        + "\n"
+    )
+
 print(risk_totals[tuple(map(sum, (zip(dims(), (-1, -1)))))])

@@ -45,3 +45,11 @@ and then see if this is due to backwards and up
 - look at somebody else's answer and find out how to do it
 
 I'll sleep on it again before deciding which one.
+
+#### update
+
+I made the two versions of the program print their riskmap to stderr so that I
+could compare.  It looks like there are lots of less risky paths to caves that
+depend on going upwards or backwards. It doesn't look like it's an issue with
+the implementation of the racket idea, just a flawed idea.
+

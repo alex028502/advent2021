@@ -88,9 +88,26 @@
 (define (vector-last vec)
   (vector-ref (vector-take-right vec 1) 0))
 
-(display (/> (current-command-line-arguments)
-             (curryr vector-ref 0)
-             (curry main)
-             compress-into-single-number-to-answer-question))
+(define answer
+  (/> (current-command-line-arguments) (curryr vector-ref 0) (curry main)))
+
+(define (format-grid total-risk-cave-matrix)
+  (/> total-risk-cave-matrix
+      vector->list
+      (curry map vector->list)
+      (curry map (curry map format3digits))
+      (curry map (curryr string-join "|"))
+      (curryr string-join "\n")
+      (curryr string-append "\n")))
+
+(define (format3digits num)
+  (/> num
+      (curry + 1000)
+      (curryr - 1) ;; to compore more easily with python output
+      number->string
+      (curryr substring 1)))
+
+(display (compress-into-single-number-to-answer-question answer))
+(display (format-grid answer) (current-error-port))
 
 (display "\n")
