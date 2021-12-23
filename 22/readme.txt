@@ -13,3 +13,9 @@ on github actions.  Now as soon as I break up the cuboid into after a new rule
 replaces part of it, I try to put back together as many cuboids as possible
 trying each dimension. This finishes the practice input on my big computer in
 like two seconds, so I am hopeful about CI giving me the answer.
+
+-- update - it worked!!
+45 seconds on CI to get the answer
+It's amazing the difference between splitting each cuboid into up to 26 when a
+new one overlaps it, and splitting each on into up to 6. Compound interest!
+
