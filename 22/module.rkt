@@ -20,6 +20,10 @@
 (provide in3d)
 (provide parse-rule)
 (provide smash)
+(provide pair-up)
+(provide fuse-on-dimension)
+(provide sort-on-dimension)
+(provide consolidate-on-dimension)
 
 ;; cheat - the arg will either be --init-rules or nothing but I just look if
 ;; there is an arg or not
@@ -30,12 +34,17 @@
   (/> (foldl (λ (next acc)
                (/> acc
                    (curry map (curry smash (cdr next)))
+                   (curry map consolidate)
                    (curry apply append)
                    (λ (l) (if (car next) (cons (cdr next) l) l))))
              '()
              (parse-rules path))
       (curry map calculate-volume)
       (curry apply +)))
+
+;; this one is not unit tested so is hard coded for three dimensions
+(define (consolidate shapes)
+  (foldl consolidate-on-dimension shapes (range 3)))
 
 (define (calculate-volume ranges)
   (/> ranges
@@ -61,6 +70,53 @@
       (curryr split-range (- (car new-range) 1/2))
       (curry map (curryr split-range (+ (last new-range) 1/2)))
       (curry apply append)))
+
+(define (consolidate-on-dimension n shapes)
+  (/> shapes
+      (curry group-by (curry remove-dimension n))
+      (curry map (curry sort-on-dimension n))
+      (curry map (curry fuse-on-dimension n))
+      (curry apply append)))
+
+(define (remove-dimension n shape)
+  (/> shape
+      length
+      range
+      (curry filter-not (curry = n))
+      (curry map (curry list-ref shape))))
+
+(define (sort-on-dimension n shapes)
+  (sort shapes
+        (λ two-shapes
+          (/> two-shapes
+              (curry map (curryr list-ref n))
+              (curry map car)
+              (curry apply <)))))
+
+(define infinity (expt 2 40))
+
+;; doesn't check if the other dimensions match up
+;; that should be done by sorting before
+;; so assuming they are in the same in the other directions, I am just using
+;; the other dimension of the first one
+(define (fuse-on-dimension n shapes)
+  (/> shapes
+      (curry map (curryr list-ref n))
+      (curry apply append)
+      (curryr append (list infinity))
+      (curry cons (- infinity))
+      pair-up
+      (curry filter-not (λ (ab) (= (add1 (car ab)) (last ab))))
+      (curry apply append)
+      cdr
+      (curryr drop-right 1)
+      pair-up
+      (curry map (curry list-set (car shapes) n))))
+
+(define (pair-up lst [done '()])
+  (if (= 0 (length lst))
+      (reverse done)
+      (pair-up (drop lst 2) (cons (take lst 2) done))))
 
 (define (split-range inclusive-range splitter)
   (if (and (> splitter (car inclusive-range))
