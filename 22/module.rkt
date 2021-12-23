@@ -15,40 +15,59 @@
 
 (provide main)
 (provide init-rules)
-
+(provide calculate-volume)
 (provide in)
 (provide in3d)
 (provide parse-rule)
-(provide highest-number-in-rules)
+(provide smash)
 
 ;; cheat - the arg will either be --init-rules or nothing but I just look if
 ;; there is an arg or not
 (define (main . args)
   (if (> (length args) 0) (init-rules) (main-main)))
 
-(define (main-main)
-  (let* ([rules (parse-rules "/dev/stdin")] [n (highest-number-in-rules rules)])
-    (foldl
-     (λ (next acc) (if (find-last-sighting-of-cube rules next) (add1 acc) acc))
-     0
-     (apply cartesian-product (make-list 3 (range (- n) (add1 n)))))))
+(define (main-main [path "/dev/stdin"])
+  (/> (foldl (λ (next acc)
+               (/> acc
+                   (curry map (curry smash (cdr next)))
+                   (curry apply append)
+                   (λ (l) (if (car next) (cons (cdr next) l) l))))
+             '()
+             (parse-rules path))
+      (curry map calculate-volume)
+      (curry apply +)))
 
-;; don't worry about the highest number in each direction unless there is a
-;; problem - just cover that distance up and down each axis
-(define (highest-number-in-rules rules)
-  (/> rules
-      (curry map cdr)
-      (curry apply append)
-      (curry apply append)
+(define (calculate-volume ranges)
+  (/> ranges
+      (curry map (curry apply -))
       (curry map abs)
-      (curry apply max)))
+      (curry map add1)
+      (curry apply *)))
 
-(define (find-last-sighting-of-cube rules coordinates)
-  (if (= (length rules) 0)
-      #f
-      (if (in3d coordinates (cdr (car rules)))
-          (car (car rules))
-          (find-last-sighting-of-cube (cdr rules) coordinates))))
+; see diagrams in tests
+(define (smash new-shape old-shape)
+  (/> (map smash-dimension new-shape old-shape)
+      (curry apply cartesian-product)
+      (curry filter (curry no-overlap new-shape))))
+
+;; cheating a bit - only checking one point since I know there is a small shape
+;; entirely inside the new shape
+(define (no-overlap new-shape small-shape)
+  (let ([sample-point (map car small-shape)])
+    (not (in3d sample-point new-shape))))
+
+(define (smash-dimension new-range old-range)
+  (/> old-range
+      (curryr split-range (- (car new-range) 1/2))
+      (curry map (curryr split-range (+ (last new-range) 1/2)))
+      (curry apply append)))
+
+(define (split-range inclusive-range splitter)
+  (if (and (> splitter (car inclusive-range))
+           (< splitter (last inclusive-range)))
+      (list (list (car inclusive-range) (floor splitter))
+            (list (ceiling splitter) (last inclusive-range)))
+      (list inclusive-range)))
 
 (define (in3d coordinates inclusive-ranges)
   (apply non-lazy-and (map in coordinates inclusive-ranges)))
@@ -62,7 +81,7 @@
   (and (>= number (car inclusive-range)) (<= number (last inclusive-range))))
 
 (define (parse-rules path)
-  (/> path file->lines (curry map parse-rule) reverse))
+  (/> path file->lines (curry map parse-rule)))
 ;; this is run a a separate main program
 (define (init-rules)
   (/> (filter (λ (line)

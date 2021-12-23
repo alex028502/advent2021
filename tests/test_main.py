@@ -706,11 +706,33 @@ def test_21(sut_dir):
 
 
 def test_22(data_dir, sut_dir):
-    input_file_path = "%s/22.txt" % data_dir
-    output = get_output_from(
-        "%s/22/program.sh" % sut_dir,
-        input_file_path,
-        "--initialization-procedure",
+    assert (
+        get_output_from(
+            "%s/22/program.sh" % sut_dir,
+            "%s/22.txt" % data_dir,
+            "--initialization-procedure",
+        )
+        == "590784"
     )
 
-    assert output == "590784"
+
+def test_22_more(data_dir, sut_dir):
+    # test data from part ii - they give a part i answer
+    assert (
+        get_output_from(
+            "%s/22/program.sh" % sut_dir,
+            "%s/22-ii.txt" % data_dir,
+            "--initialization-procedure",
+        )
+        == "474140"
+    )
+
+
+def test_22_part_ii(data_dir, sut_dir):
+    assert (
+        get_output_from(
+            "%s/22/program.sh" % sut_dir,
+            "%s/22-ii.txt" % data_dir,
+        )
+        == "2758514936282235"
+    )
