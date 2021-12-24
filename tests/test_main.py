@@ -757,3 +757,33 @@ def test_22_part_ii(data_dir, sut_dir):
         )
         == "2758514936282235"
     )
+
+
+@pytest.mark.parametrize("input_mode", ["original", "modified"])
+def test_24(data_dir, sut_dir, tmp_path, input_mode):
+    input_file_path = "%s/20.txt" % tmp_path
+    with open("%s/24.txt" % data_dir, "r") as original_f:
+        with open(input_file_path, "w") as modified_f:
+            original_content = original_f.read()
+            if input_mode == "original":
+                modified_content = original_content
+                answer = "99"
+            else:
+                assert input_mode == "modified"
+                # in the example z is 0 in most cases and 1 in the special case
+                # but the real program has to search for a z=0 so to make it
+                # more intesting, add an instruction to the end that inverts
+                # the result - the original program is happy with the first try
+                modified_content = "%sadd z -1\n" % original_content
+                answer = "39"
+            modified_f.write(modified_content)
+
+    assert (
+        get_output(
+            "-t",
+            "%s/24/module.rkt" % sut_dir,
+            "-m",
+            input_file_path,
+        )
+        == answer
+    )
