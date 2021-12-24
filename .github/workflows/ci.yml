@@ -130,4 +130,4 @@ jobs:
     - name: day 22 part ii
       run: 22/program.sh 22/input.txt
     - name: day 24 part i
-      run: racket -f 24/module.rkt -m 24/input.txt
+      run: racket -t 24/module.rkt -m 24/input.txt
