@@ -1,4 +1,9 @@
+I did part i the old fashioned way. It took me three tries.
+It was a bit like optimising a program.
 
+Also, doing something by hand sometimes helps you understand it better
+so that you have an easier time telling a computer what to do.
+So this might prepare me for part ii, but probably not. Let's see.
 
 ```
 #############
