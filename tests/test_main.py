@@ -466,7 +466,7 @@ def test_14(data_dir, sut_dir, case):
         interpreter = "racket"
     else:
         assert ext == "py"
-        interpreter = "venv/bin/python"
+        interpreter = sys.executable
 
     answers = {
         "10": 1588,
@@ -492,7 +492,7 @@ def test_14(data_dir, sut_dir, case):
 # with my emergency python program
 
 
-@pytest.mark.parametrize("language", ["venv/bin/python", "racket"])
+@pytest.mark.parametrize("language", [sys.exectutable, "racket"])
 def test_15(data_dir, sut_dir, tmp_path, language):
     if language == "racket":
         program = "%s/15/program.rkt" % sut_dir
@@ -585,7 +585,7 @@ def test_15_special_cases(data_dir, sut_dir, tmp_path, case):
     with open(input_file_path, "w") as f:
         f.write("\n".join(case) + "\n")
 
-    output = get_output_from("venv/bin/python", program, input_file_path)
+    output = get_output_from(sys.executable, program, input_file_path)
     assert output == right_answer
 
 
@@ -597,7 +597,7 @@ def test_15_part_ii(data_dir, sut_dir, tmp_path):
     with open(input_file_path, "w") as f:
         p = subprocess.Popen(
             [
-                "venv/bin/python",
+                sys.executable,
                 "%s/15/times5.py" % sut_dir,
                 original_input_file_path,
             ],
@@ -616,7 +616,7 @@ def test_15_part_ii(data_dir, sut_dir, tmp_path):
     assert not p.returncode
 
     output = get_output_from(
-        "venv/bin/python",
+        sys.executable,
         program,
         input_file_path,
     )
@@ -825,7 +825,7 @@ def test_24_c(data_dir, sut_dir, tmp_path):
     with open(c_file_path, "w") as f:
         p = subprocess.Popen(
             [
-                "venv/bin/python",
+                sys.executable,
                 transpiler_path,
                 source_path,
             ],
@@ -884,7 +884,7 @@ def test_24_c2(data_dir, sut_dir, tmp_path):
     with open(c_file_path, "w") as f:
         p = subprocess.Popen(
             [
-                "venv/bin/python",
+                sys.executable,
                 transpiler_path,
                 source_path,
             ],
