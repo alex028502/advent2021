@@ -492,7 +492,7 @@ def test_14(data_dir, sut_dir, case):
 # with my emergency python program
 
 
-@pytest.mark.parametrize("language", [sys.exectutable, "racket"])
+@pytest.mark.parametrize("language", [sys.executable, "racket"])
 def test_15(data_dir, sut_dir, tmp_path, language):
     if language == "racket":
         program = "%s/15/program.rkt" % sut_dir
