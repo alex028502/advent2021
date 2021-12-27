@@ -761,7 +761,7 @@ def test_22_part_ii(data_dir, sut_dir):
 
 @pytest.mark.parametrize("input_mode", ["original", "modified"])
 def test_24(data_dir, sut_dir, tmp_path, input_mode):
-    input_file_path = "%s/20.txt" % tmp_path
+    input_file_path = "%s/24.txt" % tmp_path
     with open("%s/24.txt" % data_dir, "r") as original_f:
         with open(input_file_path, "w") as modified_f:
             original_content = original_f.read()
