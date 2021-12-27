@@ -14,9 +14,9 @@ jobs:
       with:
         python-version: 3.8.10
     - name: check for gcc
-      run: which gcc || echo no gcc
-    - name: install gcc
-      run: apt-get update && apt-get install build-essential && which gcc && gcc --version
+      run: which gcc && which make
+    # - name: install gcc
+    #   run: sudo apt-get update && sudo apt-get install build-essential && which gcc && gcc --version
     - name: Download racket
       run: wget https://download.racket-lang.org/installers/8.3/racket-8.3-x86_64-linux-cs.sh
     - name: Install racket
