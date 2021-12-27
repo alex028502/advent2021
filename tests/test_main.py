@@ -830,3 +830,74 @@ def test_24_c(data_dir, sut_dir, tmp_path):
     )
     p.communicate()
     assert p.returncode == 0
+
+
+def test_24_c2(data_dir, sut_dir, tmp_path):
+    # this example program converts a number to binary but because the
+    # "transpiler" produces a program that only returns z, I can only check the
+    # last digit
+    c_file_path = "%s/24.c" % tmp_path
+    exe_path = "%s/24" % tmp_path
+    transpiler_path = "%s/24/transpile.py" % sut_dir
+    source_path = input_file(
+        tmp_path,
+        "inp w",
+        "add z w",
+        "mod z 2",
+        "div w 2",
+        "add y w",
+        "mod y 2",
+        "div w 2",
+        "add x w",
+        "mod x 2",
+        "div w 2",
+        "mod w 2",
+    )
+
+    with open(c_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "venv/bin/python",
+                transpiler_path,
+                source_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    p = subprocess.Popen(
+        [
+            "gcc",
+            c_file_path,
+            "-o",
+            exe_path,
+        ],
+    )
+    p.communicate()
+    assert not p.returncode
+
+    # the result of this program is in the exit code not stdout
+    p = subprocess.Popen(
+        [exe_path, "8"],
+    )
+    p.communicate()
+    assert p.returncode == 0
+
+    p = subprocess.Popen(
+        [exe_path, "9"],
+    )
+    p.communicate()
+    assert p.returncode == 1
+
+    p = subprocess.Popen(
+        [exe_path, "0"],
+    )
+    p.communicate()
+    assert p.returncode == 0
+
+    p = subprocess.Popen(
+        [exe_path, "1"],
+    )
+    p.communicate()
+    assert p.returncode == 1
