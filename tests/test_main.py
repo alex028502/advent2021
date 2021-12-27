@@ -787,3 +787,46 @@ def test_24(data_dir, sut_dir, tmp_path, input_mode):
         )
         == answer
     )
+
+
+def test_24_c(data_dir, sut_dir, tmp_path):
+    c_file_path = "%s/24.c" % tmp_path
+    exe_path = "%s/24" % tmp_path
+    transpiler_path = "%s/24/transpile.py" % sut_dir
+    source_path = "%s/24.txt" % data_dir
+
+    with open(c_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "venv/bin/python",
+                transpiler_path,
+                source_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    p = subprocess.Popen(
+        [
+            "gcc",
+            c_file_path,
+            "-o",
+            exe_path,
+        ],
+    )
+    p.communicate()
+    assert not p.returncode
+
+    # the result of this program is in the exit code not stdout
+    p = subprocess.Popen(
+        [exe_path, "39"],
+    )
+    p.communicate()
+    assert p.returncode == 1
+
+    p = subprocess.Popen(
+        [exe_path, "38"],
+    )
+    p.communicate()
+    assert p.returncode == 0

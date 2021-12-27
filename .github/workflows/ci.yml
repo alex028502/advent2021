@@ -13,6 +13,10 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.8.10
+    - name: check for gcc
+      run: which gcc || echo no gcc
+    - name: install gcc
+      run: apt-get update && apt-get install build-essential && which gcc && gcc --version
     - name: Download racket
       run: wget https://download.racket-lang.org/installers/8.3/racket-8.3-x86_64-linux-cs.sh
     - name: Install racket
@@ -129,5 +133,15 @@ jobs:
       run: 22/program.sh 22/input.txt --initialization-procedure
     - name: day 22 part ii
       run: 22/program.sh 22/input.txt
-    - name: day 24 part i
-      run: racket -t 24/module.rkt -m 24/input.txt
+    # - name: day 24 part i
+    #   run: racket -t 24/module.rkt -m 24/input.txt
+    - name: day 24 gcc idea
+      run: make -C 24
+    - uses: actions/upload-artifact@v2
+      with:
+        name: attempt-24.c
+        path: 24/program.c
+    - uses: actions/upload-artifact@v2
+      with:
+        name: attempt-24.s
+        path: 24/program.s
