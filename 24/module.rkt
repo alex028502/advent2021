@@ -15,18 +15,19 @@
 (define initial-memory (hash "w" 0 "x" 0 "y" 0 "z" 0))
 
 (define (solve memory instructions [progress ""])
-  (if (= 0 (length instructions))
-      (if (= 0 (hash-ref memory "z")) progress #f)
-      (let ([cmd (car (car instructions))] [args (cdr (car instructions))])
-        (if (equal? cmd "inp")
-            (first-ok (λ (n)
-                        (solve (hash-set memory (car args) n)
-                               (cdr instructions)
-                               (string-append progress (number->string n))))
-                      (reverse (range 1 10)))
-            (solve (apply interpret memory cmd args)
-                   (cdr instructions)
-                   progress)))))
+  (cond
+    [(not memory) #f]
+    [(= 0 (length instructions)) (if (= 0 (hash-ref memory "z")) progress #f)]
+    [else (let ([cmd (car (car instructions))] [args (cdr (car instructions))])
+            (if (equal? cmd "inp")
+                (first-ok (λ (n)
+                            (solve (hash-set memory (car args) n)
+                                   (cdr instructions)
+                                   (string-append progress (number->string n))))
+                          (reverse (range 1 10)))
+                (solve (apply interpret memory cmd args)
+                       (cdr instructions)
+                       progress)))]))
 
 ;(define (solve instructions memory [num ""])
 
@@ -51,15 +52,20 @@
 ;; > (interpret (hash "a" 5 "b" 2) "eql" "a" "b")
 ;; '#hash(("a" . 0) ("b" . 2))
 (define (interpret memory cmd . args)
-  (hash-set memory
-            (car args)
-            (apply (cond
-                     [(equal? cmd "add") +]
-                     [(equal? cmd "mul") *]
-                     [(equal? cmd "div") (λ items (floor (apply / items)))]
-                     [(equal? cmd "mod") modulo]
-                     [(equal? cmd "eql") (λ items (if (apply = items) 1 0))])
-                   (map (curry lookup memory) args))))
+  (if (and (equal? cmd "mod")
+           (< (lookup memory (car args)) 0)
+           (<= (lookup memory (last args)) 0))
+      #f
+      (hash-set
+       memory
+       (car args)
+       (apply (cond
+                [(equal? cmd "add") +]
+                [(equal? cmd "mul") *]
+                [(equal? cmd "div") (λ items (floor (apply / items)))]
+                [(equal? cmd "mod") modulo]
+                [(equal? cmd "eql") (λ items (if (apply = items) 1 0))])
+              (map (curry lookup memory) args)))))
 
 (define (lookup memory token)
   (if (string->number token) (string->number token) (hash-ref memory token)))

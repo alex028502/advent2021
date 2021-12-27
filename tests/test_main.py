@@ -789,6 +789,33 @@ def test_24(data_dir, sut_dir, tmp_path, input_mode):
     )
 
 
+def test_24_more(data_dir, sut_dir, tmp_path):
+    input_file_path = input_file(
+        tmp_path,
+        "inp w",
+        "add z w",
+        "mod z 2",
+        "div w 2",
+        "add y w",
+        "mod y 2",
+        "div w 2",
+        "add x w",
+        "mod x 2",
+        "div w 2",
+        "mod w 2",
+    )
+
+    assert (
+        get_output(
+            "-t",
+            "%s/24/module.rkt" % sut_dir,
+            "-m",
+            input_file_path,
+        )
+        == "8"
+    )
+
+
 def test_24_c(data_dir, sut_dir, tmp_path):
     c_file_path = "%s/24.c" % tmp_path
     exe_path = "%s/24" % tmp_path

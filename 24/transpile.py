@@ -9,7 +9,7 @@ import sys
 # print("int eql(int a, int b) { return (a == b) ? 1 : 0; }")
 
 print("int main(int argc, char * argv[]) {")
-print("  int w = 0; int x = 0; int y = 0; int z = 0;")
+print("  long w = 0; long x = 0; long y = 0; long z = 0;")
 
 inp_count = 0
 
@@ -32,10 +32,12 @@ with open(sys.argv[1]) as file:
         if cmd == "eql":
             print("  %s = (%s == %s) ? 1 : 0;" % (var, var, val))
             continue
+        if cmd == "mod":
+            print("  if (%s < 0 || %s <= 0) return -10;" % (var, val))
         print("  %s = %s %s %s;" % (var, var, ops[cmd], val))
         # print("  %s = %s(%s, %s);" % (var, cmd, var, val))
 
-# also tried changing to return z == 0; to see if that made a difference but
-# it didn't, and this one can be tested a little easier with the test program
-print("  return z;")
+# exit code don't work properly after 255 - so make sure that
+# something like 512 doens't give us 0
+print("  return (z > 200 || z < 0) ? 101 : z;")
 print("}")
