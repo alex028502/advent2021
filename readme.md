@@ -28,6 +28,19 @@ I tried to solve [day 24](./24) by translating their pseudo assembler program
 into a C program, and then looking to see if `gcc` optimised out any of the
 arguments.. but I didn't crack it.
 
+### source control
+
+Also, if you are a potential employer, and want to asses my organizational
+skills, you might not be too impressed by the code itself, but if you look at
+the git history with `gitk`, that is where I think I really shine
+organization-wise. Every commit on the left hand track passes the tests, and
+the commits on the right hand track are ones that went into master for one
+reason or another, but have failed the tests, so have been grouped or replaced
+by an alternative history. There are no proper merges with a 3-way diff, mainly
+because I can't figure out three way diffs. I only use merges to group commits
+together, or to rewrite history without force pushing, so that every commit
+in CI is visible in the repository.
+
 ### testing
 
 The tests are written in python, but they only test the end result using the
