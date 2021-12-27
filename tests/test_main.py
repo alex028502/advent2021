@@ -757,3 +757,174 @@ def test_22_part_ii(data_dir, sut_dir):
         )
         == "2758514936282235"
     )
+
+
+@pytest.mark.parametrize("input_mode", ["original", "modified"])
+def test_24(data_dir, sut_dir, tmp_path, input_mode):
+    input_file_path = "%s/24.txt" % tmp_path
+    with open("%s/24.txt" % data_dir, "r") as original_f:
+        with open(input_file_path, "w") as modified_f:
+            original_content = original_f.read()
+            if input_mode == "original":
+                modified_content = original_content
+                answer = "99"
+            else:
+                assert input_mode == "modified"
+                # in the example z is 0 in most cases and 1 in the special case
+                # but the real program has to search for a z=0 so to make it
+                # more intesting, add an instruction to the end that inverts
+                # the result - the original program is happy with the first try
+                modified_content = "%sadd z -1\n" % original_content
+                answer = "39"
+            modified_f.write(modified_content)
+
+    assert (
+        get_output(
+            "-t",
+            "%s/24/module.rkt" % sut_dir,
+            "-m",
+            input_file_path,
+        )
+        == answer
+    )
+
+
+def test_24_more(data_dir, sut_dir, tmp_path):
+    input_file_path = input_file(
+        tmp_path,
+        "inp w",
+        "add z w",
+        "mod z 2",
+        "div w 2",
+        "add y w",
+        "mod y 2",
+        "div w 2",
+        "add x w",
+        "mod x 2",
+        "div w 2",
+        "mod w 2",
+    )
+
+    assert (
+        get_output(
+            "-t",
+            "%s/24/module.rkt" % sut_dir,
+            "-m",
+            input_file_path,
+        )
+        == "8"
+    )
+
+
+def test_24_c(data_dir, sut_dir, tmp_path):
+    c_file_path = "%s/24.c" % tmp_path
+    exe_path = "%s/24" % tmp_path
+    transpiler_path = "%s/24/transpile.py" % sut_dir
+    source_path = "%s/24.txt" % data_dir
+
+    with open(c_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "venv/bin/python",
+                transpiler_path,
+                source_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    p = subprocess.Popen(
+        [
+            "gcc",
+            c_file_path,
+            "-o",
+            exe_path,
+        ],
+    )
+    p.communicate()
+    assert not p.returncode
+
+    # the result of this program is in the exit code not stdout
+    p = subprocess.Popen(
+        [exe_path, "39"],
+    )
+    p.communicate()
+    assert p.returncode == 1
+
+    p = subprocess.Popen(
+        [exe_path, "38"],
+    )
+    p.communicate()
+    assert p.returncode == 0
+
+
+def test_24_c2(data_dir, sut_dir, tmp_path):
+    # this example program converts a number to binary but because the
+    # "transpiler" produces a program that only returns z, I can only check the
+    # last digit
+    c_file_path = "%s/24.c" % tmp_path
+    exe_path = "%s/24" % tmp_path
+    transpiler_path = "%s/24/transpile.py" % sut_dir
+    source_path = input_file(
+        tmp_path,
+        "inp w",
+        "add z w",
+        "mod z 2",
+        "div w 2",
+        "add y w",
+        "mod y 2",
+        "div w 2",
+        "add x w",
+        "mod x 2",
+        "div w 2",
+        "mod w 2",
+    )
+
+    with open(c_file_path, "w") as f:
+        p = subprocess.Popen(
+            [
+                "venv/bin/python",
+                transpiler_path,
+                source_path,
+            ],
+            stdout=f,
+        )
+        p.communicate()
+        assert not p.returncode
+
+    p = subprocess.Popen(
+        [
+            "gcc",
+            c_file_path,
+            "-o",
+            exe_path,
+        ],
+    )
+    p.communicate()
+    assert not p.returncode
+
+    # the result of this program is in the exit code not stdout
+    p = subprocess.Popen(
+        [exe_path, "8"],
+    )
+    p.communicate()
+    assert p.returncode == 0
+
+    p = subprocess.Popen(
+        [exe_path, "9"],
+    )
+    p.communicate()
+    assert p.returncode == 1
+
+    p = subprocess.Popen(
+        [exe_path, "0"],
+    )
+    p.communicate()
+    assert p.returncode == 0
+
+    p = subprocess.Popen(
+        [exe_path, "1"],
+    )
+    p.communicate()
+    assert p.returncode == 1
