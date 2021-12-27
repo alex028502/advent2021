@@ -47,6 +47,8 @@ jobs:
       run: raco test 21/test.rkt
     - name: Unit Tests - day 22
       run: raco test 22/test.rkt
+    - name: Unit Tests - day 25
+      run: raco test 25/test.rkt
     - name: Format Check
       run: ./format-check.sh
     - name: practice round (day 1 from 2020)
@@ -147,3 +149,5 @@ jobs:
         path: 24/program.s
     # - name: day 24 part i
     #   run: make -C 24 search
+    - name: day 25 part i
+      run: racket -t 25/module.rkt -m 25/input.txt

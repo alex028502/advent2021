@@ -928,3 +928,15 @@ def test_24_c2(data_dir, sut_dir, tmp_path):
     )
     p.communicate()
     assert p.returncode == 1
+
+
+def test_25(data_dir, sut_dir):
+    input_file_path = "%s/25.txt" % data_dir
+    output = get_output(
+        "-t",
+        "%s/25/module.rkt" % sut_dir,
+        "-m",
+        input_file_path,
+    )
+
+    assert output == "58"
