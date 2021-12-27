@@ -133,8 +133,8 @@ jobs:
       run: 22/program.sh 22/input.txt --initialization-procedure
     - name: day 22 part ii
       run: 22/program.sh 22/input.txt
-    - name: day 24 part i
-      run: racket -t 24/module.rkt -m 24/input.txt
+    # - name: day 24 part i
+    #   run: racket -t 24/module.rkt -m 24/input.txt
     - name: day 24 gcc idea
       run: make -C 24 program.s
     - uses: actions/upload-artifact@v2
@@ -145,5 +145,5 @@ jobs:
       with:
         name: attempt-24.s
         path: 24/program.s
-    - name: day 24 part i
-      run: make -C 24 search
+    # - name: day 24 part i
+    #   run: make -C 24 search
