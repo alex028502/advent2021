@@ -13,6 +13,13 @@ If you are looking at this, there is a good chance that you are a potential
 employer.  I am particularily proud of my solution to
 [day 22](./22), my [pragmatic testing strategy](./tests)
 and my use of [continuous integration](.github/workflows/ci.yml)
+If you were planning on doing a "whiteboard problem" in an interview, you
+might be able to get enough information to rule me out just from my comments
+and commit messages, since I think they are a good representation of what
+I would be mumbling to myself, and anybody watching me if I were solving
+a problem like this in an interview. If you were thinking of giving me a
+coding challenge, you might also be able to rule me out ahead of time by
+finding whatever habits you dislike in this repository.
 
 I didn't do too bad. I got all but three days (19 23 24). I thought I would
 look at other people's answers, and do the ones I couldn't get, but for now, I
